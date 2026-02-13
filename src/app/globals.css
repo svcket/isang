@@ -1,26 +1,439 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Isang custom colours */
+  --color-isang-teal: var(--isang-teal);
+  --color-isang-teal-light: var(--isang-teal-light);
+  --color-isang-sky: var(--isang-sky);
+  --color-isang-sand: var(--isang-sand);
+  --color-isang-coral: var(--isang-coral);
+  --color-isang-mint: var(--isang-mint);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── Isang Light Theme (Calm Travel Palette) ─────────────────────── */
+:root {
+  --radius: 0.75rem;
+  --background: oklch(0.985 0.002 240);
+  --foreground: oklch(0.20 0.02 250);
+  --card: oklch(0.995 0.001 240);
+  --card-foreground: oklch(0.20 0.02 250);
+  --popover: oklch(0.995 0.001 240);
+  --popover-foreground: oklch(0.20 0.02 250);
+  --primary: oklch(0.55 0.12 220);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.95 0.015 220);
+  --secondary-foreground: oklch(0.30 0.04 220);
+  --muted: oklch(0.96 0.01 240);
+  --muted-foreground: oklch(0.50 0.02 250);
+  --accent: oklch(0.92 0.03 180);
+  --accent-foreground: oklch(0.25 0.05 180);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.01 240);
+  --input: oklch(0.92 0.01 240);
+  --ring: oklch(0.55 0.12 220);
+  --chart-1: oklch(0.55 0.12 220);
+  --chart-2: oklch(0.65 0.15 170);
+  --chart-3: oklch(0.70 0.10 80);
+  --chart-4: oklch(0.60 0.20 30);
+  --chart-5: oklch(0.75 0.08 300);
+
+  /* Isang Brand */
+  --isang-teal: oklch(0.55 0.12 220);
+  --isang-teal-light: oklch(0.92 0.04 220);
+  --isang-sky: oklch(0.88 0.05 230);
+  --isang-sand: oklch(0.94 0.03 80);
+  --isang-coral: oklch(0.70 0.15 25);
+  --isang-mint: oklch(0.88 0.08 165);
+
+  --sidebar: oklch(0.975 0.005 220);
+  --sidebar-foreground: oklch(0.20 0.02 250);
+  --sidebar-primary: oklch(0.55 0.12 220);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.94 0.02 220);
+  --sidebar-accent-foreground: oklch(0.30 0.04 220);
+  --sidebar-border: oklch(0.92 0.01 240);
+  --sidebar-ring: oklch(0.55 0.12 220);
+}
+
+/* ─── Isang Dark Theme ────────────────────────────────────────────── */
+.dark {
+  --background: oklch(0.14 0.015 250);
+  --foreground: oklch(0.93 0.005 240);
+  --card: oklch(0.18 0.015 250);
+  --card-foreground: oklch(0.93 0.005 240);
+  --popover: oklch(0.18 0.015 250);
+  --popover-foreground: oklch(0.93 0.005 240);
+  --primary: oklch(0.70 0.12 210);
+  --primary-foreground: oklch(0.12 0.02 250);
+  --secondary: oklch(0.25 0.015 250);
+  --secondary-foreground: oklch(0.90 0.005 240);
+  --muted: oklch(0.22 0.015 250);
+  --muted-foreground: oklch(0.65 0.01 240);
+  --accent: oklch(0.28 0.03 200);
+  --accent-foreground: oklch(0.90 0.02 200);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.28 0.01 250);
+  --input: oklch(0.28 0.015 250);
+  --ring: oklch(0.60 0.12 210);
+  --chart-1: oklch(0.60 0.15 210);
+  --chart-2: oklch(0.55 0.12 170);
+  --chart-3: oklch(0.65 0.10 80);
+  --chart-4: oklch(0.55 0.18 30);
+  --chart-5: oklch(0.60 0.08 300);
+
+  --isang-teal: oklch(0.70 0.12 210);
+  --isang-teal-light: oklch(0.25 0.05 210);
+  --isang-sky: oklch(0.30 0.04 220);
+  --isang-sand: oklch(0.30 0.03 80);
+  --isang-coral: oklch(0.65 0.14 25);
+  --isang-mint: oklch(0.40 0.08 165);
+
+  --sidebar: oklch(0.16 0.015 250);
+  --sidebar-foreground: oklch(0.93 0.005 240);
+  --sidebar-primary: oklch(0.70 0.12 210);
+  --sidebar-primary-foreground: oklch(0.12 0.02 250);
+  --sidebar-accent: oklch(0.24 0.02 250);
+  --sidebar-accent-foreground: oklch(0.90 0.005 240);
+  --sidebar-border: oklch(0.28 0.01 250);
+  --sidebar-ring: oklch(0.60 0.12 210);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── Custom Utilities ────────────────────────────────────────────── */
+
+/* Glassmorphism card */
+.glass-card {
+  background: oklch(0.99 0 0 / 70%);
+  backdrop-filter: blur(16px);
+  border: 1px solid oklch(0.92 0.01 240 / 50%);
+}
+
+.dark .glass-card {
+  background: oklch(0.20 0.015 250 / 60%);
+  border: 1px solid oklch(0.30 0.01 250 / 40%);
+}
+
+/* Blur overlay for guest itinerary teaser */
+.itinerary-blur {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Smooth scrollbar */
+.scroll-smooth::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-smooth::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-smooth::-webkit-scrollbar-thumb {
+  background: oklch(0.80 0.01 240);
+  border-radius: 999px;
+}
+
+.dark .scroll-smooth::-webkit-scrollbar-thumb {
+  background: oklch(0.35 0.01 250);
+}
+
+/* Visa status pill colours */
+.visa-free {
+  --pill-bg: oklch(0.90 0.10 145);
+  --pill-fg: oklch(0.30 0.08 145);
+}
+
+.visa-on-arrival {
+  --pill-bg: oklch(0.92 0.08 85);
+  --pill-fg: oklch(0.35 0.08 85);
+}
+
+.evisa {
+  --pill-bg: oklch(0.90 0.06 250);
+  --pill-fg: oklch(0.35 0.06 250);
+}
+
+.embassy-visa {
+  --pill-bg: oklch(0.92 0.10 25);
+  --pill-fg: oklch(0.35 0.10 25);
+}
+
+/* Chat bubble animation */
+@keyframes messageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-enter {
+  animation: messageIn 0.3s ease-out forwards;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, oklch(0.95 0 0) 25%, oklch(0.90 0 0) 50%, oklch(0.95 0 0) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Floating CTA pulse */
+@keyframes gentlePulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.55 0.12 220 / 30%);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px oklch(0.55 0.12 220 / 0%);
+  }
+}
+
+.cta-pulse {
+  animation: gentlePulse 2.5s ease-in-out infinite;
+}
+
+/* ─── Landing Page Collage ───────────────────────────────────────── */
+.collage-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+}
+
+.collage-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.collage-row-short {
+  max-width: 700px;
+}
+
+.collage-item {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+  animation: collageFloat 6s ease-in-out infinite;
+}
+
+.collage-item-sm {
+  width: 80px;
+  height: 90px;
+}
+
+.collage-item-md {
+  width: 120px;
+  height: 100px;
+}
+
+.collage-item-lg {
+  width: 110px;
+  height: 120px;
+}
+
+@media (min-width: 640px) {
+  .collage-item-sm {
+    width: 100px;
+    height: 110px;
+  }
+
+  .collage-item-md {
+    width: 150px;
+    height: 130px;
+  }
+
+  .collage-item-lg {
+    width: 140px;
+    height: 155px;
+  }
+
+  .collage-container {
+    gap: 16px;
+  }
+
+  .collage-row {
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .collage-item-sm {
+    width: 120px;
+    height: 130px;
+  }
+
+  .collage-item-md {
+    width: 180px;
+    height: 155px;
+  }
+
+  .collage-item-lg {
+    width: 160px;
+    height: 180px;
+  }
+}
+
+@keyframes collageFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Stagger the float timing for each item */
+.collage-row .collage-item:nth-child(odd) {
+  animation-delay: -1s;
+}
+
+.collage-row .collage-item:nth-child(3n) {
+  animation-delay: -3s;
+}
+
+/* ─── Landing Input ──────────────────────────────────────────────── */
+.landing-input {
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.landing-input:focus-within {
+  border-color: #ccc;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.landing-textarea {
+  width: 100%;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 16px 20px 4px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: transparent;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  min-height: 48px;
+  max-height: 140px;
+}
+
+.landing-textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* ─── Orange Send Button ─────────────────────────────────────────── */
+.landing-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #e5e7eb;
+  color: #9ca3af;
+}
+
+.landing-send-btn:not(:disabled) {
+  background: #FF4D00;
+  color: white;
+}
+
+.landing-send-btn:not(:disabled):hover {
+  background: #e64500;
+  transform: scale(1.05);
+}
+
+.landing-send-btn:disabled {
+  cursor: default;
 }
