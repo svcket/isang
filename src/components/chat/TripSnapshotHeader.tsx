@@ -1,66 +1,39 @@
 "use client";
 
 import { useAppStore } from "@/lib/store";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Wallet, Compass } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function TripSnapshotHeader() {
     const tripSnapshot = useAppStore((s) => s.tripSnapshot);
 
     if (!tripSnapshot) return null;
 
+    // Helper to format data
+    const parts = [];
+    if (tripSnapshot.destination) parts.push(tripSnapshot.destination.split(",")[0]); // Just City
+    if (tripSnapshot.dates) {
+        // Simple format: "Aug 18-21"
+        parts.push(`${tripSnapshot.dates.start.split('/')[0]}/${tripSnapshot.dates.start.split('/')[1]} - ${tripSnapshot.dates.end?.split('/')[0]}/${tripSnapshot.dates.end?.split('/')[1]}`);
+    } else if (tripSnapshot.duration) {
+        parts.push(tripSnapshot.duration);
+    }
+
+    // Hardcoded for now based on Image 1 reference, usually this comes from state
+    parts.push("Travellers");
+
+    if (tripSnapshot.budget) {
+        parts.push(`${tripSnapshot.budget.currency} ${tripSnapshot.budget.amount.toLocaleString()}`);
+    }
+
     return (
-        <div className="border-b border-border bg-card/60 backdrop-blur-sm px-4 sm:px-6 py-3">
-            <div className="max-w-2xl mx-auto flex flex-wrap items-center gap-2">
-                {tripSnapshot.destination && (
-                    <Badge
-                        variant="secondary"
-                        className="flex items-center gap-1.5 text-xs"
-                    >
-                        <MapPin className="h-3 w-3 text-isang-coral" />
-                        {tripSnapshot.destination}
-                    </Badge>
-                )}
-                {tripSnapshot.dates && (
-                    <Badge
-                        variant="secondary"
-                        className="flex items-center gap-1.5 text-xs"
-                    >
-                        <Calendar className="h-3 w-3 text-isang-teal" />
-                        {tripSnapshot.dates.start}
-                        {tripSnapshot.dates.end
-                            ? ` – ${tripSnapshot.dates.end}`
-                            : ""}
-                    </Badge>
-                )}
-                {tripSnapshot.duration && !tripSnapshot.dates && (
-                    <Badge
-                        variant="secondary"
-                        className="flex items-center gap-1.5 text-xs"
-                    >
-                        <Calendar className="h-3 w-3 text-isang-teal" />
-                        {tripSnapshot.duration}
-                    </Badge>
-                )}
-                {tripSnapshot.budget && (
-                    <Badge
-                        variant="secondary"
-                        className="flex items-center gap-1.5 text-xs"
-                    >
-                        <Wallet className="h-3 w-3 text-isang-mint" />
-                        {tripSnapshot.budget.currency}{" "}
-                        {tripSnapshot.budget.amount.toLocaleString()}
-                    </Badge>
-                )}
-                {tripSnapshot.travelStyle && (
-                    <Badge
-                        variant="secondary"
-                        className="flex items-center gap-1.5 text-xs"
-                    >
-                        <Compass className="h-3 w-3 text-isang-sky" />
-                        {tripSnapshot.travelStyle}
-                    </Badge>
-                )}
+        <div className="sticky top-14 z-30 flex justify-center py-4 pointer-events-none w-full">
+            <div className="pointer-events-auto bg-white/95 backdrop-blur-md border border-neutral-200 rounded-full px-5 py-2.5 shadow-sm flex items-center gap-4 text-sm font-medium text-neutral-900 animate-in fade-in slide-in-from-top-4 duration-500">
+                {parts.map((part, i) => (
+                    <div key={i} className="flex items-center gap-4">
+                        {i > 0 && <div className="h-4 w-[1px] bg-neutral-200" />}
+                        <span>{part}</span>
+                    </div>
+                ))}
             </div>
         </div>
     );

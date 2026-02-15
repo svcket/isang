@@ -28,6 +28,7 @@ interface AppState {
     // UI
     activeView: "chat" | "suggestions" | "itinerary";
     selectedSuggestionId: string | null;
+    selectedItems: string[];
     showAuthModal: boolean;
 
     // Actions
@@ -38,6 +39,7 @@ interface AppState {
     setItinerary: (itinerary: Itinerary) => void;
     setActiveView: (view: "chat" | "suggestions" | "itinerary") => void;
     setSelectedSuggestion: (id: string | null) => void;
+    toggleItem: (id: string) => void;
     setShowAuthModal: (show: boolean) => void;
     incrementTurn: () => void;
     processAssistantData: (data: AssistantResponse) => void;
@@ -62,6 +64,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     activeView: "chat",
     selectedSuggestionId: null,
+    selectedItems: [],
     showAuthModal: false,
 
     // Actions
@@ -81,6 +84,16 @@ export const useAppStore = create<AppState>((set, get) => ({
     setActiveView: (view) => set({ activeView: view }),
 
     setSelectedSuggestion: (id) => set({ selectedSuggestionId: id }),
+
+    toggleItem: (id) =>
+        set((state) => {
+            const exists = state.selectedItems.includes(id);
+            return {
+                selectedItems: exists
+                    ? state.selectedItems.filter((i) => i !== id)
+                    : [...state.selectedItems, id],
+            };
+        }),
 
     setShowAuthModal: (show) => set({ showAuthModal: show }),
 
@@ -110,6 +123,7 @@ export const useAppStore = create<AppState>((set, get) => ({
             itinerary: null,
             activeView: "chat",
             selectedSuggestionId: null,
+            selectedItems: [],
             sessionId: generateId(),
         }),
 }));

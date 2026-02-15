@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -196,6 +198,17 @@
 
 .dark .scroll-smooth::-webkit-scrollbar-thumb {
   background: oklch(0.35 0.01 250);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 /* Visa status pill colours */
@@ -436,4 +449,16 @@
 
 .landing-send-btn:disabled {
   cursor: default;
+}
+
+/* Hide number input spinners globally */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }

@@ -3,7 +3,6 @@
 import { useAppStore } from "@/lib/store";
 import AppHeader from "@/components/layout/AppHeader";
 import LandingPage from "@/components/landing/LandingPage";
-import TripSnapshotHeader from "@/components/chat/TripSnapshotHeader";
 import ChatMessages from "@/components/chat/ChatMessages";
 import ChatInput from "@/components/chat/ChatInput";
 import SuggestionsGrid from "@/components/suggestions/SuggestionsGrid";
@@ -41,7 +40,6 @@ export default function Home() {
       {/* Chat View */}
       {activeView === "chat" && (
         <div className="flex flex-col flex-1">
-          <TripSnapshotHeader />
           <ChatMessages />
 
           {/* Floating CTA when suggestions are available */}
@@ -59,7 +57,7 @@ export default function Home() {
                 {!itinerary && (
                   <Button
                     size="sm"
-                    className="rounded-full text-xs bg-gradient-to-r from-isang-teal to-primary hover:opacity-90"
+                    className="rounded-full text-xs bg-primary text-primary-foreground hover:opacity-90"
                     onClick={() => {
                       const store = useAppStore.getState();
                       const id = Math.random().toString(36).substring(2, 15);
@@ -102,7 +100,7 @@ export default function Home() {
                 {itinerary && (
                   <Button
                     size="sm"
-                    className="rounded-full text-xs bg-gradient-to-r from-isang-teal to-primary hover:opacity-90"
+                    className="rounded-full text-xs bg-primary text-primary-foreground hover:opacity-90"
                     onClick={() => setActiveView("itinerary")}
                   >
                     <CalendarPlus className="h-3.5 w-3.5 mr-1.5" />
@@ -120,7 +118,6 @@ export default function Home() {
       {/* Suggestions View */}
       {activeView === "suggestions" && (
         <div className="flex flex-col flex-1">
-          <TripSnapshotHeader />
           <SuggestionsGrid />
           <SuggestionDetail />
 
@@ -137,7 +134,7 @@ export default function Home() {
             {!itinerary && (
               <Button
                 size="sm"
-                className="rounded-full text-xs bg-gradient-to-r from-isang-teal to-primary hover:opacity-90"
+                className="rounded-full text-xs bg-primary text-primary-foreground hover:opacity-90"
                 onClick={() => {
                   const store = useAppStore.getState();
                   const id = Math.random().toString(36).substring(2, 15);
@@ -180,7 +177,7 @@ export default function Home() {
             {itinerary && (
               <Button
                 size="sm"
-                className="rounded-full text-xs bg-gradient-to-r from-isang-teal to-primary hover:opacity-90"
+                className="rounded-full text-xs bg-primary text-primary-foreground hover:opacity-90"
                 onClick={() => setActiveView("itinerary")}
               >
                 <CalendarPlus className="h-3.5 w-3.5 mr-1.5" />
@@ -194,7 +191,6 @@ export default function Home() {
       {/* Itinerary View */}
       {activeView === "itinerary" && (
         <div className="flex flex-col flex-1">
-          <TripSnapshotHeader />
           <ItineraryView />
           <div className="sticky bottom-0 flex justify-center gap-2 py-3 bg-background/90 backdrop-blur-sm border-t border-border/50">
             <Button

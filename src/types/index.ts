@@ -1,4 +1,4 @@
-// ─── Trip & Intent Types ───────────────────────────────────────────────
+import { ResponseBlock } from "./response-block";
 
 export interface TripSnapshot {
   destination: string;
@@ -109,6 +109,7 @@ export interface AssistantResponse {
   entryRequirements?: EntryRequirements;
   cta?: { label: string; action: string; payload?: string };
   itinerary?: Itinerary;
+  responseBlock?: ResponseBlock;
 }
 
 // ─── Session & Auth ────────────────────────────────────────────────────
@@ -128,3 +129,5 @@ export interface UserProfile {
   nationality?: string;
   createdAt: Date;
 }
+
+export * from "./response-block";
