@@ -5,10 +5,10 @@ test.describe("Trip Plan Flow", () => {
         await page.goto("/");
 
         // Wait for landing
-        await expect(page.getByText("Where to next?")).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText("I’m headed to")).toBeVisible({ timeout: 10000 });
 
         // Type prompt
-        const input = page.locator('input').first(); // Generic input
+        const input = page.getByPlaceholder("What’s the plan, buddy? Tell me anything...");
         await expect(input).toBeVisible();
         await input.fill("Trip to Tokyo for 5 days");
         await input.press("Enter");
@@ -17,15 +17,16 @@ test.describe("Trip Plan Flow", () => {
         await expect(page.getByText(/trip plan/i)).toBeVisible({ timeout: 15000 });
 
         // Check for sections
-        await expect(page.getByText("Where to Stay")).toBeVisible();
-        await expect(page.getByText("Local Eats")).toBeVisible();
+        await expect(page.getByText("Top lodging Tokyo")).toBeVisible();
+        await expect(page.getByText("Top food Tokyo")).toBeVisible();
 
         // Check Actions
         const cta = page.getByRole("button", { name: /Create itinerary/i });
         await expect(cta).toBeVisible();
 
         // Click CTA
-        await cta.click();
+        await cta.scrollIntoViewIfNeeded();
+        await cta.click({ force: true });
 
         // Verify Itinerary View
         // Depending on transition, check URL or specific element

@@ -203,7 +203,7 @@
 .scrollbar-hide {
   -ms-overflow-style: none;
   /* IE and Edge */
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
   /* Firefox */
 }
 

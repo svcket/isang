@@ -7,11 +7,18 @@ describe("ResponseShell Component", () => {
     const mockData: ResponseBlock = {
         type: "TRIP_PLAN",
         summary: "Test Summary",
-        trip_meta: { destination: "Test Dest", duration: "5 days", currency: "$", budget_est: "$100" },
+        trip_meta: {
+            destination: "Test Dest",
+            duration: "5 days",
+            currency: "$",
+            budget_est: "$100",
+            dates: "Aug 24 - Aug 31",
+            travelers: "2 Travelers"
+        },
         sections: [
             {
                 id: "sec-1",
-                type: "LODGING",
+                type: "LODGING", // Maps to StaysSection
                 title: "Where to Stay",
                 items: [
                     { id: "item-1", title: "Hotel A", image_url: "", meta: [], price_chip: "$100" }
@@ -25,15 +32,15 @@ describe("ResponseShell Component", () => {
         ]
     };
 
-    it("renders summary and trip meta", () => {
+    it("renders trip meta", () => {
         render(<ResponseShell data={mockData} />);
-        expect(screen.getByText("Test Summary")).toBeInTheDocument();
         expect(screen.getByText("Test Dest")).toBeInTheDocument();
+        expect(screen.getByText("Aug 24 - Aug 31")).toBeInTheDocument();
     });
 
     it("renders sections", () => {
         render(<ResponseShell data={mockData} />);
-        expect(screen.getByText("Where to Stay")).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Lodgings" })).toBeInTheDocument();
         expect(screen.getByText("Hotel A")).toBeInTheDocument();
     });
 

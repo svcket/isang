@@ -40,7 +40,7 @@ describe("Trip Store (Zustand)", () => {
             sections: [{ category: "stays" as const, title: "Stays", items: [] }],
             itinerary: null
         };
-        // @ts-ignore
+        // @ts-expect-error - Testing partial update
         useAppStore.getState().processAssistantData(data);
 
         const state = useAppStore.getState();

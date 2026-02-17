@@ -94,7 +94,6 @@ export default function LandingPage() {
         tripSnapshot,
         turnCount,
         isGuest,
-        setShowAuthModal,
     } = useAppStore();
 
     // Auto-calculate duration when date range changes
@@ -241,7 +240,7 @@ export default function LandingPage() {
         const prompt = `I'm headed to ${location} starting ${dateText}, for ${dur} days with a budget of ${rawBudget !== "undecided" ? "$" + rawBudget : "undecided"}`;
 
         await processMessage(prompt);
-    }, [destination, dateRange, duration, budget, isLoading]); // Removed processMessage from deps as it's defined inside component mostly stable but technically recreated on render unless wrapped in useCallback too. For simplicity with defined-in-render, it's fine.
+    }, [destination, dateRange, duration, budget, isLoading, processMessage]);
 
     /* ── Bottom Input Handler ───────────────────────────────────────── */
     const handleBottomSubmit = useCallback(async () => {
@@ -262,8 +261,8 @@ export default function LandingPage() {
     return (
         <div className="relative min-h-[100svh] bg-white text-neutral-900 font-sans">
             {/* Hidden Inputs */}
-            <input type="file" ref={imageInputRef} accept="image/*" className="hidden" />
-            <input type="file" ref={fileInputRef} className="hidden" />
+            <input type="file" ref={imageInputRef} accept="image/*" className="hidden" aria-label="Upload image" />
+            <input type="file" ref={fileInputRef} className="hidden" aria-label="Upload file" />
 
 
 
@@ -416,10 +415,9 @@ export default function LandingPage() {
                                     handleBottomSubmit();
                                 }
                             }}
-                            className="w-full resize-none bg-transparent px-2 text-[16px] leading-relaxed text-neutral-900 placeholder:text-neutral-400/80 focus:outline-none"
+                            className="w-full resize-none bg-transparent px-2 text-[16px] leading-relaxed text-neutral-900 placeholder:text-neutral-400/80 focus:outline-none min-h-[28px]"
                             placeholder="What’s the plan, buddy? Tell me anything..."
                             rows={1}
-                            style={{ minHeight: "28px" }}
                             onInput={(e) => {
                                 const target = e.target as HTMLTextAreaElement;
                                 target.style.height = "auto";

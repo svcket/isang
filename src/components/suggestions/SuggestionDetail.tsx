@@ -20,7 +20,6 @@ import {
     Plus,
     Bookmark,
     CalendarPlus,
-    ArrowRight,
 } from "lucide-react";
 import type { SuggestionCategory, SuggestionItem } from "@/types";
 

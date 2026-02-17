@@ -1,5 +1,5 @@
-import { ResponseBlock } from "@/types";
-import { Calendar, Wallet, MapPin } from "lucide-react";
+import type { ResponseBlock } from "@/types";
+
 
 interface TripSummaryHeaderProps {
     meta: NonNullable<ResponseBlock['trip_meta']>;
@@ -27,6 +27,11 @@ export default function TripSummaryHeader({ meta }: TripSummaryHeaderProps) {
                         <span>{meta.budget_est}</span>
                     </>
                 )}
+            </div>
+            <div className="flex items-center gap-2 text-[19px] font-medium text-neutral-600">
+                <span>{meta.dates}</span>
+                <span>•</span>
+                <span>{meta.travelers}</span>
             </div>
         </div>
     );

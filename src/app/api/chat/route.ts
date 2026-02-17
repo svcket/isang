@@ -1,11 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type {
-    AssistantResponse,
     ResponseBlock,
-    Section,
-    Item,
-    ResponseType,
-} from "@/types";
+} from "@/types/response-block";
+import { generateSection } from "@/lib/utils";
+import type { AssistantResponse } from "@/types";
 
 // 1. TRIP_PLAN: Dest + (Dates OR Duration OR Budget)
 // 2. DESTINATION_INFO: Dest only
@@ -17,6 +15,7 @@ export function generateMockResponse(
     snapshot?: AssistantResponse['tripSnapshot']
 ): { reply: string; data?: AssistantResponse } {
     const lower = message.toLowerCase();
+    // Trigger rebuild
 
     // ─── MOCK: Santorini Specific Response ───────────────────────────────
     if (lower.includes("santorini")) {
@@ -50,21 +49,21 @@ export function generateMockResponse(
                                 {
                                     id: "f1",
                                     title: "Ibom Airlines",
-                                    image_url: "", // In a real app, this would be a logo URL
+                                    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Ibom_Air_Logo.jpg/800px-Ibom_Air_Logo.jpg", // Placeholder logo
                                     meta: ["Lagos", "Capetown", "Round trip, 2 stops"],
                                     price_chip: "$319 +VAT"
                                 },
                                 {
                                     id: "f2",
                                     title: "FLY Rwanda",
-                                    image_url: "",
+                                    image_url: "https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/RwandAir_logo.svg/1200px-RwandAir_logo.svg.png", // Placeholder
                                     meta: ["Lagos", "London", "Round trip"],
                                     price_chip: "$319 +VAT"
                                 },
                                 {
                                     id: "f3",
                                     title: "Emirates Airlines",
-                                    image_url: "",
+                                    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png", // Placeholder
                                     meta: ["Lagos", "London", "Round trip"],
                                     price_chip: "$319 +VAT"
                                 }
@@ -78,30 +77,98 @@ export function generateMockResponse(
                             items: [
                                 {
                                     id: "l1",
-                                    title: "The Marly Boutique Hotel – beachfront luxury",
+                                    title: "The Marly Boutique Hotel – beachfront luxury with ocean views",
                                     image_url: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=450&fit=crop",
                                     meta: [],
                                     price_chip: "From ₦450k / night"
                                 },
                                 {
                                     id: "l2",
-                                    title: "Kloof Street Hotel – urban charm",
+                                    title: "Kloof Street Hotel – urban charm in the heart of Cape Town",
                                     image_url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&h=450&fit=crop",
                                     meta: [],
                                     price_chip: "From ₦520k / night"
                                 },
                                 {
                                     id: "l3",
-                                    title: "Cloud 9 Boutique Hotel – affordable & scenic",
+                                    title: "Cloud 9 Boutique Hotel – affordable & scenic, with modern amenities",
                                     image_url: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=450&fit=crop",
                                     meta: [],
                                     price_chip: "From ₦400k / night"
                                 }
                             ]
+                        },
+                        {
+                            id: "food-1",
+                            type: "FOOD",
+                            title: "Food & Restaurants",
+                            sources: ["Booking.com", "agoda", "Reddit"],
+                            items: [
+                                {
+                                    id: "r1",
+                                    title: "Kloof Street House – romantic, colonial-era dining experience",
+                                    image_url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=450&fit=crop",
+                                    meta: [],
+                                    price_chip: "From ₦15k / meal"
+                                },
+                                {
+                                    id: "r2",
+                                    title: "The Pot Luck Club – trendy tapas & cocktails at the Old Biscuit Mill",
+                                    image_url: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=450&fit=crop",
+                                    meta: [],
+                                    price_chip: "From ₦45k / meal"
+                                },
+                                {
+                                    id: "r3",
+                                    title: "Codfather – Camps Bay seafood staple with fresh catches daily",
+                                    image_url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=450&fit=crop",
+                                    meta: [],
+                                    price_chip: "From ₦30k / meal"
+                                }
+                            ]
+                        },
+                        {
+                            id: "date-1",
+                            type: "ACTIVITY",
+                            title: "Things To Do",
+                            sources: ["Booking.com", "agoda", "Reddit"],
+                            items: [
+                                {
+                                    id: "a1",
+                                    title: "Caldera sunset walk",
+                                    image_url: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&h=450&fit=crop",
+                                    meta: [],
+                                    price_chip: "Free"
+                                },
+                                {
+                                    id: "a2",
+                                    title: "Red Beach visit",
+                                    image_url: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=600&h=450&fit=crop",
+                                    meta: [],
+                                    price_chip: "Free"
+                                },
+                                {
+                                    id: "a3",
+                                    title: "Boat tour (half-day)",
+                                    image_url: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=450&fit=crop",
+                                    meta: [],
+                                    price_chip: "From ₦80k"
+                                }
+                            ]
                         }
                     ],
+                    closing: "I can refine this to find cheaper flights, different dates, or hotels closer to Oia. What should we prioritize?",
                     actions: [
-                        { label: "Ask me anything!", action_id: "ask", style: "SECONDARY" }
+                        {
+                            action_id: 'create_itinerary',
+                            label: 'Create Itinerary',
+                            style: 'PRIMARY',
+                        },
+                        {
+                            action_id: 'modify_search',
+                            label: 'Modify Search',
+                            style: 'SECONDARY',
+                        }
                     ]
                 }
             }
@@ -169,7 +236,7 @@ export function generateMockResponse(
     // If we have a detected strict destination OR if the input is short enough to be a destination query
 
     let targetDest = detectedDest ? detectedDest.dest : null;
-    let targetCurrency = detectedDest ? detectedDest.currency : "$";
+    const targetCurrency = detectedDest ? detectedDest.currency : "$";
 
     // Fallback: Attempt to extract destination from "Trip to X" or just treat the whole string as dest if short
     // Fallback: Attempt to extract destination from "Trip to X" or "I'm headed to X"
@@ -178,7 +245,7 @@ export function generateMockResponse(
         // Matches: "headed to [Dest] starting" OR "trip to [Dest] starting" OR just "headed to [Dest]" at end
         const tripToMatch = lower.match(/(?:trip|headed) to (.+?)(?: starting| for| with|$)/i);
 
-        if (tripToMatch) {
+        if (tripToMatch && tripToMatch[1]) {
             // Capitalize first letter of each word
             targetDest = tripToMatch[1].replace(/\b\w/g, l => l.toUpperCase());
         } else if (message.length < 50 && !lower.includes("help") && !lower.includes("hello")) {
@@ -236,7 +303,19 @@ export function generateMockResponse(
 
             return {
                 reply: responseBlock.summary,
-                data: { responseBlock },
+                data: {
+                    responseBlock,
+                    tripSnapshot: {
+                        destination: title,
+                        dates: undefined,
+                        duration: finalDuration,
+                        budget: {
+                            amount: parseInt(finalBudget.replace(/[^0-9]/g, "")) || 0,
+                            currency: targetCurrency
+                        },
+                        travelStyle: "Explorer"
+                    }
+                },
             };
         } else {
             // DESTINATION_INFO logic
@@ -262,7 +341,16 @@ export function generateMockResponse(
 
             return {
                 reply: responseBlock.summary,
-                data: { responseBlock },
+                data: {
+                    responseBlock,
+                    tripSnapshot: {
+                        destination: title,
+                        dates: undefined,
+                        duration: "Flexible",
+                        budget: undefined,
+                        travelStyle: "Explorer"
+                    }
+                },
             };
         }
     }
@@ -274,138 +362,6 @@ export function generateMockResponse(
 }
 
 // ─── Mock Data Generators ──────────────────────────────────────────────
-
-function generateSection(type: Section["type"], city: string): Section {
-    const seed = city.length + type.length; // Deterministic-ish
-
-    if (type === "FLIGHT") {
-        return {
-            id: `sec-${type}`,
-            type,
-            title: "Flights",
-            items: [
-                {
-                    id: `fly-${city}-1`,
-                    title: "Lufthansa",
-                    image_url: "",
-                    meta: ["Lagos", city, "Round trip, 1 stop"],
-                    price_chip: "$850 +VAT"
-                },
-                {
-                    id: `fly-${city}-2`,
-                    title: "British Airways",
-                    image_url: "",
-                    meta: ["Lagos", "London", "Round trip"],
-                    price_chip: "$920 +VAT"
-                },
-                {
-                    id: `fly-${city}-3`,
-                    title: "Air France",
-                    image_url: "",
-                    meta: ["Lagos", "Paris", "Round trip"],
-                    price_chip: "$890 +VAT"
-                }
-            ],
-            sources: ["Skyscanner", "Kayak"],
-        };
-    }
-
-    if (type === "LODGING") {
-        return {
-            id: `sec-${type}`,
-            type,
-            title: "Where to Stay",
-            items: [
-                {
-                    id: `stay-${city}-1`,
-                    title: `Grand ${city} Hotel`,
-                    image_url: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop",
-                    meta: ["4.8 ★", "City Center"],
-                    price_chip: "$220/night",
-                },
-                {
-                    id: `stay-${city}-2`,
-                    title: `${city} Boutique Stay`,
-                    image_url: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=300&fit=crop",
-                    meta: ["4.5 ★", "Quiet Neighborhood"],
-                    price_chip: "$150/night",
-                },
-                {
-                    id: `stay-${city}-3`,
-                    title: `Urban Hostel ${city}`,
-                    image_url: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=400&h=300&fit=crop",
-                    meta: ["4.2 ★", "Social Vibe"],
-                    price_chip: "$45/night",
-                },
-            ],
-            sources: ["Booking.com", "Agoda"],
-        };
-    }
-
-    if (type === "FOOD") {
-        return {
-            id: `sec-${type}`,
-            type,
-            title: "Local Eats",
-            items: [
-                {
-                    id: `food-${city}-1`,
-                    title: `The Golden Spoon`,
-                    image_url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop",
-                    meta: ["Fine Dining", "Dinner"],
-                    price_chip: "$50-80",
-                },
-                {
-                    id: `food-${city}-2`,
-                    title: `Street Corner`,
-                    image_url: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop",
-                    meta: ["Street Food", "Lunch"],
-                    price_chip: "$10-20",
-                },
-            ],
-            sources: ["Eater", "TripAdvisor"],
-        };
-    }
-
-    if (type === "ACTIVITY" || type === "HIGHLIGHT") {
-        return {
-            id: `sec-${type}`,
-            type,
-            title: type === "HIGHLIGHT" ? "Top Highlights" : "Things to Do",
-            items: [
-                {
-                    id: `act-${city}-1`,
-                    title: `${city} City Tour`,
-                    image_url: "https://images.unsplash.com/photo-1569949381669-ecf31ae8b453?w=400&h=300&fit=crop",
-                    meta: ["3 hours", "Guided"],
-                    price_chip: "$30",
-                },
-                {
-                    id: `act-${city}-2`,
-                    title: `Museum of ${city}`,
-                    image_url: "https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=400&h=300&fit=crop",
-                    meta: ["2 hours", "Culture"],
-                    price_chip: "$15",
-                },
-                {
-                    id: `act-${city}-3`,
-                    title: `Sunset Viewpoint`,
-                    image_url: "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=400&h=300&fit=crop",
-                    meta: ["1 hour", "Scenic"],
-                    price_chip: "Free",
-                },
-            ],
-            sources: ["Viator", "Locals"],
-        };
-    }
-
-    return {
-        id: "generic",
-        type: "GENERIC",
-        title: "More Info",
-        items: [],
-    };
-}
 
 // ─── Route Handler ─────────────────────────────────────────────────────
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
+
 
 export default function TripSnapshotHeader() {
     const tripSnapshot = useAppStore((s) => s.tripSnapshot);

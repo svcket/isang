@@ -5,10 +5,10 @@ test.describe("Trip Edit Flow", () => {
         await page.goto("/");
 
         // Wait for landing
-        await expect(page.getByText("Where to next?")).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText("I’m headed to")).toBeVisible({ timeout: 10000 });
 
         // 1. Create initial plan
-        const input = page.locator('input').first();
+        const input = page.getByPlaceholder("What’s the plan, buddy? Tell me anything...");
         await expect(input).toBeVisible();
         await input.fill("Trip to Tokyo for 5 days");
         await input.press("Enter");

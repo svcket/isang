@@ -1,4 +1,4 @@
-import { ResponseBlock } from "./response-block";
+import type { ResponseBlock } from "./response-block";
 
 export interface TripSnapshot {
   destination: string;

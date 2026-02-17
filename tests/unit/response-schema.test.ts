@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { generateMockResponse } from "@/app/api/chat/route";
-import type { ResponseBlock } from "@/types";
+
 
 describe("Response Schema Contract", () => {
     it("should validate TRIP_PLAN structure", () => {

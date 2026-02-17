@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useAppStore } from "@/lib/store";
 import { ArrowUp, Paperclip, Mic, Image as ImageIcon, FileText, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -176,8 +176,8 @@ export default function ChatInput() {
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-white via-white to-transparent pb-6 pt-10 px-4">
             <div className="max-w-[700px] mx-auto w-full">
                 {/* Inputs */}
-                <input type="file" ref={imageInputRef} accept="image/*" className="hidden" />
-                <input type="file" ref={fileInputRef} className="hidden" />
+                <input type="file" ref={imageInputRef} accept="image/*" className="hidden" aria-label="Upload image" />
+                <input type="file" ref={fileInputRef} className="hidden" aria-label="Upload file" />
 
                 <div className="relative flex flex-col rounded-[32px] border border-[#E5E5E5] bg-white p-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all focus-within:border-[1.5px] focus-within:border-black focus-within:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
                     <textarea
@@ -190,10 +190,9 @@ export default function ChatInput() {
                                 handleSend();
                             }
                         }}
-                        className="w-full resize-none bg-transparent px-3 text-[16px] leading-relaxed text-neutral-900 placeholder:text-neutral-400/80 focus:outline-none"
-                        placeholder="What’s the plan, buddy? Tell me anything..."
+                        className="w-full resize-none bg-transparent px-3 text-[16px] leading-relaxed text-neutral-900 placeholder:text-neutral-400/80 focus:outline-none min-h-[24px]"
+                        placeholder="Create an itinerary for this trip..."
                         rows={1}
-                        style={{ minHeight: "24px" }}
                         onInput={(e) => {
                             const target = e.target as HTMLTextAreaElement;
                             target.style.height = "auto";

@@ -3,7 +3,6 @@
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import {
-    Plane,
     MessageCircle,
     LayoutGrid,
     CalendarDays,
@@ -32,10 +31,10 @@ export default function AppHeader() {
     /* ── In-App Nav Header ────────────────────────────────────────── */
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-border/50 transition-all duration-300">
-            <div className="w-full">
+            <div className="w-full relative">
                 <div className="flex items-center justify-between h-16 px-6">
                     {/* Left: Logo */}
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2.5 shrink-0 z-10">
                         <div className="flex items-center justify-center">
                             <img
                                 src="/onboarding/isang-response-avatar.png"
@@ -43,16 +42,17 @@ export default function AppHeader() {
                                 className="h-8 w-auto object-contain"
                             />
                         </div>
+                        <span className="text-xl font-bold text-neutral-900 tracking-tight">Isang</span>
                     </div>
 
-                    {/* Center: Trip Snapshot Pill (Chat View Only) OR Nav Tabs */}
-                    <div className="flex-1 flex justify-center px-4">
+                    {/* Center: Trip Snapshot Pill (Absolute Center) */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex justify-center z-0">
                         {!isLanding && (
                             activeView === "chat" && messages.length > 0 ? (
                                 // New Trip Snapshot Pill Design (Image 2)
-                                <div className="hidden md:flex items-center gap-3 bg-white border border-neutral-200 rounded-full px-5 py-2 shadow-sm animate-in fade-in slide-in-from-top-2 duration-500">
+                                <div className="flex items-center gap-3 bg-white border border-neutral-200 rounded-full px-5 py-2 animate-in fade-in slide-in-from-top-2 duration-500">
                                     <span className="text-sm font-semibold text-neutral-900 whitespace-nowrap">
-                                        {itinerary?.destination || "Cape Town"}
+                                        {itinerary?.tripSnapshot?.destination || "Cape Town"}
                                     </span>
                                     <div className="h-3 w-[1px] bg-neutral-200" />
                                     <span className="text-sm font-medium text-neutral-600 whitespace-nowrap">
@@ -112,7 +112,7 @@ export default function AppHeader() {
                     </div>
 
                     {/* Right: Auth / Actions */}
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-3 shrink-0 z-10 ml-auto">
                         {isGuest ? (
                             <>
                                 <Button
@@ -149,10 +149,7 @@ export default function AppHeader() {
                         {/* Mobile Nav items... keep existing code or verify if needed */}
                         <button
                             onClick={() => setActiveView("chat")}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${activeView === "chat"
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-muted text-muted-foreground"
-                                }`}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all bg-muted text-muted-foreground"
                         >
                             <MessageCircle className="h-3 w-3" />
                             Chat

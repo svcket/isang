@@ -17,17 +17,12 @@ import { ErrorBoundary } from "../ui/error-boundary";
 function ChatBubble({ message }: { message: ChatMessageType }) {
     const isUser = message.role === "user";
     const toggleItem = useAppStore((s) => s.toggleItem);
-    const setActiveView = useAppStore((s) => s.setActiveView); // For actions
 
 
     // ─── Response Block Rendering ────────────────────────────────────────
     if (!isUser && message.data?.responseBlock) {
         return (
-            <div className="message-enter flex gap-3 flex-row w-full max-w-lg">
-                <Avatar className="h-8 w-8 shrink-0 flex items-center justify-center rounded-lg bg-transparent mt-1 overflow-hidden">
-                    <img src="/onboarding/isang-response-avatar.png" alt="Isang" className="h-full w-full object-contain" />
-                </Avatar>
-
+            <div className="message-enter w-full max-w-[750px] mx-auto">
                 <ErrorBoundary>
                     <ResponseShell
                         data={message.data.responseBlock}
@@ -47,44 +42,29 @@ function ChatBubble({ message }: { message: ChatMessageType }) {
         );
     }
 
-    return (
-        <div
-            className={`message-enter flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"
-                }`}
-        >
-            {/* Avatar */}
-            <Avatar
-                className={`h-8 w-8 shrink-0 flex items-center justify-center rounded-full ${isUser
-                    ? "bg-transparent" // Hidden/Transparent for user to match clean look or simple icon
-                    : "bg-transparent rounded-lg" // Remove separate bg, rely on image
-                    }`}
-            >
-                {isUser ? (
-                    <span className="sr-only">You</span>
-                ) : (
-                    <img src="/onboarding/isang-response-avatar.png" alt="Isang" className="h-full w-full object-contain" />
-                )}
-            </Avatar>
+    // ─── User Message Rendering ──────────────────────────────────────────
+    if (isUser) {
+        return (
+            <div className="message-enter flex gap-3 flex-row-reverse w-full max-w-[750px] mx-auto">
+                <div className="flex flex-col gap-1 items-end max-w-[80%]">
+                    <div className="bg-[#FFF5EB] text-[#1a1a1a] px-5 py-3 rounded-[20px] rounded-tr-sm text-[15px] leading-relaxed shadow-sm border border-neutral-100">
+                        <p className="whitespace-pre-wrap">{message.content}</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
-            <div
-                className={`max-w-[80%] rounded-3xl px-6 py-4 text-[15px] leading-relaxed shadow-sm ${isUser
-                    ? "bg-[#FFF5EB] text-[#1a1a1a] rounded-br-md"
-                    : "bg-white border border-neutral-100 rounded-bl-md"
-                    }`}
-            >
-                {isUser ? (
-                    <p className="whitespace-pre-wrap">
-                        {message.content.split(/(\*\*.*?\*\*)/g).map((part, i) =>
-                            part.startsWith("**") && part.endsWith("**") ? (
-                                <span key={i} className="font-bold">{part.slice(2, -2)}</span>
-                            ) : (
-                                <span key={i}>{part}</span>
-                            )
-                        )}
-                    </p>
-                ) : (
+    // ─── Catch-all for other messages (e.g. text-only AI response) ───────
+    return (
+        <div className="message-enter flex gap-3 flex-row w-full max-w-[750px] mx-auto">
+            <Avatar className="h-8 w-8 shrink-0 flex items-center justify-center rounded-lg bg-transparent mt-1 overflow-hidden">
+                <img src="/onboarding/isang-response-avatar.png" alt="Isang" className="h-full w-full object-contain" />
+            </Avatar>
+            <div className="flex flex-col gap-1 items-start max-w-[80%]">
+                <div className="bg-white border border-neutral-100 px-5 py-3 rounded-[20px] rounded-tl-sm text-[15px] leading-relaxed shadow-sm text-neutral-900">
                     <p className="whitespace-pre-wrap">{message.content}</p>
-                )}
+                </div>
             </div>
         </div>
     );
@@ -92,9 +72,9 @@ function ChatBubble({ message }: { message: ChatMessageType }) {
 
 function TypingIndicator() {
     return (
-        <div className="message-enter flex gap-3 items-start">
-            <Avatar className="h-8 w-8 shrink-0 flex items-center justify-center rounded-full bg-gradient-to-br from-isang-teal to-isang-mint text-white">
-                <Sparkles className="h-4 w-4" />
+        <div className="message-enter flex gap-3 items-start w-full max-w-[750px] mx-auto">
+            <Avatar className="h-8 w-8 shrink-0 flex items-center justify-center rounded-lg bg-transparent mt-1 overflow-hidden">
+                <img src="/onboarding/isang-response-avatar.png" alt="Isang" className="h-full w-full object-contain" />
             </Avatar>
             <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
                 <div className="flex gap-1.5 items-center">
@@ -120,7 +100,7 @@ export default function ChatMessages() {
 
     return (
         <ScrollArea className="flex-1 px-4 sm:px-6" ref={scrollRef}>
-            <div className="flex flex-col gap-4 py-24 max-w-2xl mx-auto">
+            <div className="flex flex-col gap-4 pt-24 pb-96 max-w-2xl mx-auto">
                 {messages.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
                         <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-isang-teal to-isang-mint flex items-center justify-center shadow-lg">

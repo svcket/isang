@@ -43,7 +43,6 @@ export function DestinationInput({
     const [open, setOpen] = useState(false);
     const [inputValue, setInputValue] = useState(value);
     const [destinations, setDestinations] = useState<Destination[]>([]);
-    const [loading, setLoading] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const isSelection = useRef(false);
@@ -67,7 +66,6 @@ export function DestinationInput({
         }
 
         const timer = setTimeout(async () => {
-            setLoading(true);
             try {
                 const response = await fetch(
                     `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
@@ -77,6 +75,7 @@ export function DestinationInput({
                 const data = await response.json();
 
                 if (data.results) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const mapped: Destination[] = data.results.map((item: any) => ({
                         id: item.id.toString(),
                         name: item.name,
@@ -92,13 +91,11 @@ export function DestinationInput({
             } catch (error) {
                 console.error("Failed to fetch destinations", error);
                 setDestinations([]);
-            } finally {
-                setLoading(false);
             }
         }, 300); // 300ms debounce
 
         return () => clearTimeout(timer);
-    }, [inputValue]);
+    }, [inputValue, open]);
 
     const handleSelect = (destination: Destination) => {
         isSelection.current = true;

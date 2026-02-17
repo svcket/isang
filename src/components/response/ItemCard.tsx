@@ -1,6 +1,5 @@
-import { Item } from "@/types";
+import type { Item } from "@/types";
 import { Plus } from "lucide-react";
-import PriceChip from "./PriceChip";
 import Image from "next/image";
 
 interface ItemCardProps {
@@ -11,7 +10,7 @@ interface ItemCardProps {
 
 export default function ItemCard({ item, onAdd, className }: ItemCardProps) {
     return (
-        <div className={`relative flex-shrink-0 w-[200px] sm:w-[220px] snap-start group cursor-pointer ${className}`}>
+        <div className={`relative flex-shrink-0 w-full sm:w-full group cursor-pointer ${className}`}>
             {/* Image Container */}
             <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-muted mb-2.5">
                 <Image
@@ -24,34 +23,27 @@ export default function ItemCard({ item, onAdd, className }: ItemCardProps) {
 
                 {/* Overlay Gradient */}
                 <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />
-
-                {/* Price Chip (Bottom Right) */}
-                {item.price_chip && (
-                    <div className="absolute bottom-2 right-2">
-                        <PriceChip text={item.price_chip} />
-                    </div>
-                )}
-
-                {/* Add Button (Top Right) */}
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onAdd?.(item.id);
-                    }}
-                    className="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 text-gray-900 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:scale-105"
-                    aria-label="Add to trip"
-                >
-                    <Plus className="w-4 h-4 stroke-[2.5]" />
-                </button>
             </div>
 
             {/* Content */}
-            <div className="space-y-0.5 px-1">
-                <h3 className="font-semibold text-gray-900 text-[15px] leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+            <div className="flex flex-col gap-1 px-1 mt-2">
+                <h3 className="font-medium text-neutral-900 text-[13px] leading-snug line-clamp-2 group-hover:text-[#FF4405] transition-colors">
                     {item.title}
                 </h3>
 
-                {/* Meta Row */}
+                {/* Price (New Location) */}
+                <div className="flex items-baseline gap-1.5 mt-0.5">
+                    <span className="text-[16px] font-semibold text-neutral-900">
+                        {item.price_chip || item.price}
+                    </span>
+                    {item.subtext && (
+                        <span className="text-[13px] text-neutral-500 truncate">
+                            {item.subtext}
+                        </span>
+                    )}
+                </div>
+
+                {/* Meta Row (Optional) */}
                 {item.meta && item.meta.length > 0 && (
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground overflow-hidden">
                         <span>{item.meta[0]}</span>

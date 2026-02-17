@@ -48,7 +48,7 @@ interface AppState {
 
 const generateId = () => Math.random().toString(36).substring(2, 15);
 
-export const useAppStore = create<AppState>((set, get) => ({
+export const useAppStore = create<AppState>((set) => ({
     // Defaults
     isGuest: true,
     turnCount: 0,
