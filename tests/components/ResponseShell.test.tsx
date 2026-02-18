@@ -32,11 +32,7 @@ describe("ResponseShell Component", () => {
         ]
     };
 
-    it("renders trip meta", () => {
-        render(<ResponseShell data={mockData} />);
-        expect(screen.getByText("Test Dest")).toBeInTheDocument();
-        expect(screen.getByText("Aug 24 - Aug 31")).toBeInTheDocument();
-    });
+
 
     it("renders sections", () => {
         render(<ResponseShell data={mockData} />);

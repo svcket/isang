@@ -15,16 +15,18 @@ export function cn(...inputs: ClassValue[]) {
  *   - New sections are added.
  */
 export function mergeResponseBlocks(current: ResponseBlock, incoming: ResponseBlock): ResponseBlock {
-  const mergedSections = [...current.sections];
+  const mergedSections = [...(current.sections || [])];
 
-  incoming.sections.forEach(newSection => {
-    const index = mergedSections.findIndex(s => s.id === newSection.id);
-    if (index >= 0) {
-      mergedSections[index] = newSection;
-    } else {
-      mergedSections.push(newSection);
-    }
-  });
+  if (incoming.sections) {
+    incoming.sections.forEach(newSection => {
+      const index = mergedSections.findIndex(s => s.id === newSection.id);
+      if (index >= 0) {
+        mergedSections[index] = newSection;
+      } else {
+        mergedSections.push(newSection);
+      }
+    });
+  }
 
   return {
     ...current,

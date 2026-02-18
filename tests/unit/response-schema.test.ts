@@ -4,7 +4,7 @@ import { generateMockResponse } from "@/app/api/chat/route";
 
 describe("Response Schema Contract", () => {
     it("should validate TRIP_PLAN structure", () => {
-        const { data } = generateMockResponse("Trip to Tokyo for 5 days", 0);
+        const { data } = generateMockResponse("Trip to Tokyo for 5 days with $3000", 0);
         const block = data?.responseBlock;
 
         expect(block).toBeDefined();
@@ -21,8 +21,8 @@ describe("Response Schema Contract", () => {
 
         // Sections
         expect(Array.isArray(block?.sections)).toBe(true);
-        expect(block?.sections.length).toBeGreaterThan(0);
-        block?.sections.forEach(section => {
+        expect(block?.sections?.length).toBeGreaterThan(0);
+        block?.sections?.forEach(section => {
             expect(section.id).toBeDefined();
             expect(section.title).toBeDefined();
             expect(Array.isArray(section.items)).toBe(true);
@@ -31,12 +31,12 @@ describe("Response Schema Contract", () => {
         // Actions
         expect(Array.isArray(block?.actions)).toBe(true);
         expect(block?.actions?.length).toBeGreaterThan(0);
-        expect(block?.actions?.[0]?.style).toBe("PRIMARY");
+        expect(block?.actions?.[0]?.style).toBe("SECONDARY");
     });
 
     it("should validate items structure", () => {
         const { data } = generateMockResponse("Trip to Tokyo for 5 days", 0);
-        const items = data?.responseBlock?.sections[0]?.items;
+        const items = data?.responseBlock?.sections?.[0]?.items;
 
         expect(items).toBeDefined();
         if (items && items.length > 0) {

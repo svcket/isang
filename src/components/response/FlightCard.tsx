@@ -1,5 +1,5 @@
 import type { Item } from "@/types";
-import { MoveRight, Plus } from "lucide-react";
+import { MoveRight, Plus, Plane } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -85,22 +85,10 @@ export default function FlightCard({
                         <span className="text-[17px] font-medium text-neutral-900 tracking-tight">{_origin}</span>
                     </div>
 
-                    {/* Center: Orange Plane Icon */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                        <div className="w-[34px] h-[34px] bg-[#FF4405] rounded-[10px] flex items-center justify-center transform transition-transform group-hover:scale-105 shadow-sm">
-                            <div className="rotate-[-134deg]">
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="stroke-[3]"
-                                >
-                                    <path d="M22 12L2 12" stroke="white" strokeWidth="0" />
-                                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" strokeWidth="0.5" />
-                                </svg>
-                            </div>
+                    {/* Center: Orange Icon */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                        <div className="w-5 h-5 bg-[#FF4405] rounded-[4px] flex items-center justify-center shadow-sm">
+                            <MoveRight className="w-3 h-3 text-white rotate-[226deg]" strokeWidth={3} />
                         </div>
                     </div>
 
@@ -113,7 +101,7 @@ export default function FlightCard({
                 {/* Footer: Price & Details */}
                 <div className="mt-1">
                     <div className="flex items-baseline gap-1.5">
-                        <span className="text-[17px] font-bold text-neutral-900 tracking-tight">
+                        <span className="text-[16px] font-bold text-neutral-900 tracking-tight">
                             {priceMain}
                         </span>
                         {priceSub && (

@@ -8,6 +8,7 @@ import {
     CalendarDays,
     RotateCcw,
 } from "lucide-react";
+import TripSummaryHeader from "@/components/response/TripSummaryHeader";
 
 export default function AppHeader() {
     const activeView = useAppStore((s) => s.activeView);
@@ -26,6 +27,10 @@ export default function AppHeader() {
     /* ── Pre-Auth Landing Header ──────────────────────────────────── */
     /* ── Pre-Auth Landing Header ──────────────────────────────────── */
     // Universal Header
+    const activeTripMeta = messages
+        .slice()
+        .reverse()
+        .find((m) => m.role === "assistant" && m.data?.responseBlock?.trip_meta)?.data?.responseBlock?.trip_meta;
 
     /* ── In-App Nav Header ────────────────────────────────────────── */
     /* ── In-App Nav Header ────────────────────────────────────────── */
@@ -47,67 +52,8 @@ export default function AppHeader() {
 
                     {/* Center: Trip Snapshot Pill (Absolute Center) */}
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex justify-center z-0">
-                        {!isLanding && (
-                            activeView === "chat" && messages.length > 0 ? (
-                                // New Trip Snapshot Pill Design (Image 2)
-                                <div className="flex items-center gap-3 bg-white border border-neutral-200 rounded-full px-5 py-2 animate-in fade-in slide-in-from-top-2 duration-500">
-                                    <span className="text-sm font-semibold text-neutral-900 whitespace-nowrap">
-                                        {itinerary?.tripSnapshot?.destination || "Cape Town"}
-                                    </span>
-                                    <div className="h-3 w-[1px] bg-neutral-200" />
-                                    <span className="text-sm font-medium text-neutral-600 whitespace-nowrap">
-                                        Aug 18-21
-                                    </span>
-                                    <div className="h-3 w-[1px] bg-neutral-200" />
-                                    <span className="text-sm font-medium text-neutral-600 whitespace-nowrap">
-                                        Travellers
-                                    </span>
-                                    <div className="h-3 w-[1px] bg-neutral-200" />
-                                    <span className="text-sm font-medium text-neutral-900 whitespace-nowrap">
-                                        ₦ 6,500,000
-                                    </span>
-                                </div>
-                            ) : (
-                                // Standard Nav Tabs
-                                <nav className="hidden sm:flex items-center gap-1 bg-muted/50 rounded-lg p-1">
-                                    <button
-                                        onClick={() => setActiveView("chat")}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${activeView === "chat"
-                                            ? "bg-background text-foreground shadow-sm"
-                                            : "text-muted-foreground hover:text-foreground"
-                                            }`}
-                                    >
-                                        <MessageCircle className="h-3.5 w-3.5" />
-                                        Chat
-                                    </button>
-                                    <button
-                                        onClick={() => hasSuggestions && setActiveView("suggestions")}
-                                        disabled={!hasSuggestions}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${activeView === "suggestions"
-                                            ? "bg-background text-foreground shadow-sm"
-                                            : hasSuggestions
-                                                ? "text-muted-foreground hover:text-foreground"
-                                                : "text-muted-foreground/40 cursor-not-allowed"
-                                            }`}
-                                    >
-                                        <LayoutGrid className="h-3.5 w-3.5" />
-                                        Suggestions
-                                    </button>
-                                    <button
-                                        onClick={() => hasItinerary && setActiveView("itinerary")}
-                                        disabled={!hasItinerary}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${activeView === "itinerary"
-                                            ? "bg-background text-foreground shadow-sm"
-                                            : hasItinerary
-                                                ? "text-muted-foreground hover:text-foreground"
-                                                : "text-muted-foreground/40 cursor-not-allowed"
-                                            }`}
-                                    >
-                                        <CalendarDays className="h-3.5 w-3.5" />
-                                        Itinerary
-                                    </button>
-                                </nav>
-                            )
+                        {!isLanding && activeTripMeta && (
+                            <TripSummaryHeader meta={activeTripMeta} />
                         )}
                     </div>
 

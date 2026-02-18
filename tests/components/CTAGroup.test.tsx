@@ -22,7 +22,7 @@ describe("CTAGroup Logic (via ResponseShell)", () => {
 
         render(<ResponseShell data={data} />);
         const btn = screen.getByText("Primary Only");
-        expect(btn).toHaveClass("bg-primary"); // Check style class
+        expect(btn).toHaveClass("bg-neutral-900"); // Check style class
     });
 
     it("renders primary and secondary actions", () => {

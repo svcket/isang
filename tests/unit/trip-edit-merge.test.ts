@@ -31,12 +31,12 @@ describe("Trip Edit Merge Logic", () => {
         expect(merged.trip_meta?.budget_est).toBe("$1200");
 
         // Check replaced section
-        const sec1 = merged.sections.find(s => s.id === "sec-1");
+        const sec1 = merged.sections?.find(s => s.id === "sec-1");
         expect(sec1?.title).toBe("Updated Lodging");
         expect(sec1?.items.length).toBe(1);
 
         // Check persisted section
-        const sec2 = merged.sections.find(s => s.id === "sec-2");
+        const sec2 = merged.sections?.find(s => s.id === "sec-2");
         expect(sec2?.title).toBe("Original Food");
     });
 
@@ -52,7 +52,7 @@ describe("Trip Edit Merge Logic", () => {
         };
 
         const merged = mergeResponseBlocks(baseBlock, newSectionBlock);
-        expect(merged.sections.length).toBe(3);
-        expect(merged.sections.find(s => s.id === "sec-3")).toBeDefined();
+        expect(merged.sections?.length).toBe(3);
+        expect(merged.sections?.find(s => s.id === "sec-3")).toBeDefined();
     });
 });

@@ -1,5 +1,6 @@
 import type { ResponseBlock } from "@/types";
-
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 interface TripSummaryHeaderProps {
     meta: NonNullable<ResponseBlock['trip_meta']>;
@@ -7,31 +8,45 @@ interface TripSummaryHeaderProps {
 
 export default function TripSummaryHeader({ meta }: TripSummaryHeaderProps) {
     return (
-        <div className="flex flex-col gap-1 mb-2">
-            <div className="flex items-center gap-1.5 text-blue-900 font-bold text-lg">
-                {meta.destination}
-            </div>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-neutral-500 lowercase">
+        <div className="flex justify-center">
+            <div className="inline-flex items-center bg-white border border-neutral-200 rounded-full px-1 py-1 shadow-sm gap-1">
+                {/* Destination */}
+                <Button
+                    variant="ghost"
+                    className={`h-8 rounded-full px-3 text-[15px] font-semibold hover:bg-neutral-100 ${meta.destination ? "text-neutral-900" : "text-neutral-600"}`}
+                >
+                    {meta.destination || "Where"}
+                </Button>
 
-                {(meta.duration || meta.startDate) && (
-                    <span>
-                        {meta.startDate ? `${meta.startDate}` : ''}
-                        {meta.startDate && meta.duration ? ' • ' : ''}
-                        {meta.duration}
-                    </span>
-                )}
+                <div className="h-4 w-[1px] bg-neutral-200" />
 
-                {meta.budget_est && (
-                    <>
-                        <span className="w-1 h-1 rounded-full bg-neutral-300" />
-                        <span>{meta.budget_est}</span>
-                    </>
-                )}
-            </div>
-            <div className="flex items-center gap-2 text-[19px] font-medium text-neutral-600">
-                <span>{meta.dates}</span>
-                <span>•</span>
-                <span>{meta.travelers}</span>
+                {/* Dates */}
+                <Button
+                    variant="ghost"
+                    className={`h-8 rounded-full px-3 text-[14px] font-medium hover:bg-neutral-100 ${meta.dates || meta.startDate ? "text-neutral-900" : "text-neutral-600"}`}
+                >
+                    {meta.dates || meta.startDate || "When"}
+                </Button>
+
+                <div className="h-4 w-[1px] bg-neutral-200" />
+
+                {/* Travelers */}
+                <Button
+                    variant="ghost"
+                    className={`h-8 rounded-full px-3 text-[14px] font-medium hover:bg-neutral-100 ${meta.travelers ? "text-neutral-900" : "text-neutral-600"}`}
+                >
+                    {meta.travelers || "Travelers"}
+                </Button>
+
+                <div className="h-4 w-[1px] bg-neutral-200" />
+
+                {/* Budget */}
+                <Button
+                    variant="ghost"
+                    className={`h-8 rounded-full px-3 text-[14px] font-medium hover:bg-neutral-100 ${meta.budget_est ? "text-neutral-900" : "text-neutral-600"}`}
+                >
+                    {meta.budget_est || "Budget"}
+                </Button>
             </div>
         </div>
     );

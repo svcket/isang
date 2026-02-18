@@ -28,7 +28,7 @@ describe("Pricing Chip Formatting", () => {
         // Based on mock data specific knowledge or generic logic
         // "Activity" sections sometimes have "Free" items
         const { data } = generateMockResponse("Trip to Tokyo for 5 days", 0);
-        const activitySection = data?.responseBlock?.sections.find(s => s.type === "ACTIVITY" || s.type === "HIGHLIGHT");
+        const activitySection = data?.responseBlock?.sections?.find(s => s.type === "ACTIVITY" || s.type === "HIGHLIGHT");
         if (activitySection) {
             const freeItem = activitySection.items.find(i => i.price_chip?.toLowerCase() === "free");
             if (freeItem && freeItem.price_chip) {

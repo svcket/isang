@@ -24,8 +24,8 @@ describe("Intent Router Logic", () => {
 
     it("should return fallback message for unclear intent", () => {
         const { reply, data } = generateMockResponse("Hello there", 0);
-        expect(reply).toContain("could you tell me where you want to go");
-        expect(data).toBeUndefined();
+        expect(reply).toContain("How can I help you");
+        expect(data?.responseBlock?.type).toBe("GREETING");
     });
 
     it("should handle Santorini special case", () => {
@@ -35,5 +35,14 @@ describe("Intent Router Logic", () => {
         // or a responseBlock. The mock logic does:
         // data: { tripSnapshot: ..., responseBlock: ... }
         expect(data?.responseBlock?.type).toBe("TRIP_PLAN");
+    });
+
+    it("should return generic TRIP_PLAN for other destinations", () => {
+        const { data } = generateMockResponse("Plan a trip to Lagos", 0);
+        expect(data?.responseBlock?.type).toBe("TRIP_PLAN");
+        expect(data?.tripSnapshot?.destination).toBe("Lagos");
+        // Check if dynamic content is generated
+        const activitySection = data?.responseBlock?.sections?.find(s => s.type === "ACTIVITY" || s.type === "HIGHLIGHT");
+        expect(activitySection).toBeDefined();
     });
 });

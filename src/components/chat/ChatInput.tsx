@@ -179,7 +179,7 @@ export default function ChatInput() {
                 <input type="file" ref={imageInputRef} accept="image/*" className="hidden" aria-label="Upload image" />
                 <input type="file" ref={fileInputRef} className="hidden" aria-label="Upload file" />
 
-                <div className="relative flex flex-col rounded-[32px] border border-[#E5E5E5] bg-white p-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all focus-within:border-[1.5px] focus-within:border-black focus-within:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+                <div className="relative flex flex-col rounded-[28px] border border-[#E5E5E5] bg-white p-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all focus-within:border-[1.5px] focus-within:border-black focus-within:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
                     <textarea
                         id="chat-textarea"
                         value={value}
@@ -191,7 +191,7 @@ export default function ChatInput() {
                             }
                         }}
                         className="w-full resize-none bg-transparent px-3 text-[16px] leading-relaxed text-neutral-900 placeholder:text-neutral-400/80 focus:outline-none min-h-[24px]"
-                        placeholder="Create an itinerary for this trip..."
+                        placeholder="Ask me anything..."
                         rows={1}
                         onInput={(e) => {
                             const target = e.target as HTMLTextAreaElement;
@@ -250,13 +250,13 @@ export default function ChatInput() {
                             disabled={!value.trim() || isLoading}
                             aria-label="Send"
                             className={cn(
-                                "flex h-10 w-10 items-center justify-center rounded-full transition-all bg-[#FF4405] text-white shadow-sm",
+                                "flex h-11 w-11 items-center justify-center rounded-xl transition-all bg-[#FF4405] text-white shadow-sm",
                                 !value.trim() || isLoading
                                     ? "opacity-40 cursor-not-allowed shadow-none"
                                     : "opacity-100 hover:bg-[#e63d05] hover:scale-105"
                             )}
                         >
-                            <ArrowUp className="h-5 w-5" strokeWidth={3} />
+                            <ArrowUp className="h-6 w-6" strokeWidth={3} />
                         </button>
                     </div>
                 </div>

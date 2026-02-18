@@ -33,7 +33,7 @@ export default function ItemCard({ item, onAdd, className }: ItemCardProps) {
 
                 {/* Price (New Location) */}
                 <div className="flex items-baseline gap-1.5 mt-0.5">
-                    <span className="text-[16px] font-semibold text-neutral-900">
+                    <span className="text-[14px] font-semibold text-neutral-900">
                         {item.price_chip || item.price}
                     </span>
                     {item.subtext && (

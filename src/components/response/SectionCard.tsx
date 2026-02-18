@@ -29,7 +29,7 @@ export default function SectionCard({ section, onItemAdd, title, icon, children 
                         {/* eslint-disable-next-line react-hooks/static-components */}
                         <Icon className="w-4 h-4" />
                     </div>
-                    <h2 className="text-lg font-semibold text-gray-900 tracking-tight">
+                    <h2 className="text-[15px] font-semibold text-gray-900 tracking-tight">
                         {displayTitle}
                     </h2>
                 </div>
@@ -54,7 +54,7 @@ export default function SectionCard({ section, onItemAdd, title, icon, children 
                     {/* eslint-disable-next-line react-hooks/static-components */}
                     <Icon className="w-4 h-4" />
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900 tracking-tight">
+                <h2 className="text-[15px] font-semibold text-gray-900 tracking-tight">
                     {section.title}
                 </h2>
             </div>

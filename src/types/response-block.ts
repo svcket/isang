@@ -1,8 +1,9 @@
-export type ResponseType = 'TRIP_PLAN' | 'DESTINATION_INFO' | 'TRIP_EDIT';
+export type ResponseType = 'TRIP_PLAN' | 'DESTINATION_INFO' | 'TRIP_EDIT' | 'ITINERARY' | 'GENERAL_ASSIST' | 'GREETING';
 
 export interface ResponseBlock {
     type: ResponseType;
     summary: string; // One sentence max
+    introduction?: string; // Brief text before sections
     trip_meta?: {
         destination: string;
         origin?: string;
@@ -14,7 +15,11 @@ export interface ResponseBlock {
         dates?: string; // e.g. "Aug 24 - Aug 31"
         travelers?: string; // e.g. "2 Travelers"
     };
-    sections: Section[];
+    // Standard Sections
+    sections?: Section[];
+    // Itinerary Specific
+    days?: ItineraryDay[];
+
     actions: Action[]; // Primary + Secondary CTAs
     followups?: string[]; // Max 1 question if strictly necessary
     closing?: string; // Optional closing remark or prompt
@@ -48,4 +53,22 @@ export interface Action {
     action_id: string; // e.g. "create_itinerary", "show_cheaper"
     style: 'PRIMARY' | 'SECONDARY';
     payload?: unknown; // Data needing to be passed back
+}
+
+// ─── Itinerary Types ───────────────────────────────────────────────────
+
+export interface ItineraryBlock {
+    kind: 'plan' | 'tip' | 'spend';
+    content?: string; // narrative or tip text
+    title?: string; // Optional title for blocks
+    amount?: string; // for 'spend' kind (e.g. "₦1.8M")
+    note?: string; // for 'spend' kind (e.g. "mostly on hotel...")
+    dateStr?: string; // for 'spend' labels (e.g. "Oct 12 2025")
+}
+
+export interface ItineraryDay {
+    day_index: number; // 1-based
+    title: string; // e.g. "Arrival & Oceanfront Welcome"
+    overview: string; // The main narrative paragraph
+    blocks: ItineraryBlock[];
 }

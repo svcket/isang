@@ -1,11 +1,11 @@
 import SectionCard from "./SectionCard";
-import TripSummaryHeader from "./TripSummaryHeader";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import FlightsSection, { type FlightItem } from "./sections/FlightsSection";
 import StaysSection from "./sections/StaysSection";
 import FoodSection from "./sections/FoodSection";
 import ActivitySection from "./sections/ActivitySection";
+import ItineraryResponseShell from "./itinerary/ItineraryResponseShell";
 
 // Helper to map generic Item to FlightItem
 function mapToFlightItems(items: any[]): FlightItem[] {
@@ -33,16 +33,28 @@ interface ResponseShellProps {
 export default function ResponseShell({ data: rawData, onItemAdd, onAction, className }: ResponseShellProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data = rawData as any;
+
+    // ─── ITINERARY VIEW ───────────────────────────────────────────────
+    if (data.type === 'ITINERARY') {
+        return (
+            <ItineraryResponseShell
+                days={data.days || []}
+                actions={data.actions}
+                onAction={onAction}
+            />
+        );
+    }
+
+    // ─── STANDARD VIEW (Plan / Info / Edit) ───────────────────────────
     return (
         <div className={cn("w-full space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-500 bg-white p-5 rounded-2xl border border-neutral-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)]", className)}>
 
-            {/* 1. Trip Meta Header (if available) */}
-            {data.trip_meta && <TripSummaryHeader meta={data.trip_meta} />}
+            {/* 1. Trip Meta Header (Moved to AppHeader) */}
 
             {/* Intro Text - Restored & Verified */}
             {data.introduction && (
                 <div className="px-1">
-                    <p className="text-[18px] text-neutral-600 leading-relaxed">
+                    <p className="text-[16px] text-neutral-600 leading-relaxed">
                         {data.introduction}
                     </p>
                 </div>
@@ -52,7 +64,7 @@ export default function ResponseShell({ data: rawData, onItemAdd, onAction, clas
             <div className="space-y-6">
                 {/* Sections */}
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {data.sections.map((section: any) => {
+                {data.sections?.map((section: any) => {
                     if (section.type === 'FLIGHT') {
                         return (
                             <FlightsSection
@@ -94,6 +106,16 @@ export default function ResponseShell({ data: rawData, onItemAdd, onAction, clas
                         );
                     }
 
+                    if (section.type === 'HIGHLIGHT' && false) {
+                        return (
+                            <SectionCard
+                                key={section.id}
+                                section={section}
+                                onItemAdd={onItemAdd}
+                            />
+                        );
+                    }
+
                     return null;
                 })}
             </div>
@@ -118,7 +140,7 @@ export default function ResponseShell({ data: rawData, onItemAdd, onAction, clas
                             variant={action.style === 'PRIMARY' ? 'default' : 'outline'}
                             className={cn(
                                 "w-full sm:w-auto",
-                                action.style === 'PRIMARY' && "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md",
+                                action.style === 'PRIMARY' && "bg-neutral-900 text-white hover:bg-neutral-800 shadow-md",
                                 action.style === 'SECONDARY' && "border-input bg-background hover:bg-accent hover:text-accent-foreground"
                             )}
                         >

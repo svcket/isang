@@ -16,7 +16,83 @@ import { ErrorBoundary } from "../ui/error-boundary";
 
 function ChatBubble({ message }: { message: ChatMessageType }) {
     const isUser = message.role === "user";
-    const toggleItem = useAppStore((s) => s.toggleItem);
+    const {
+        toggleItem,
+        addMessage,
+        setLoading,
+        tripSnapshot,
+        turnCount,
+        isGuest,
+        messages,
+        processAssistantData,
+        incrementTurn
+    } = useAppStore();
+
+    const handleAction = async (actionId: string, payload: any, label: string = "Perform action") => {
+        // Prevent duplicate submissions if loading
+        if (useAppStore.getState().isLoading) return;
+
+        const userMessage = {
+            id: Math.random().toString(36).substring(2, 15),
+            role: "user" as const,
+            content: label, // Use the button label as the message
+            timestamp: new Date(),
+        };
+
+        addMessage(userMessage);
+        setLoading(true);
+
+        try {
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: label,
+                    action_id: actionId, // Pass action_id to help routing
+                    history: messages.map((m) => ({
+                        role: m.role,
+                        content: m.content,
+                    })),
+                    tripSnapshot,
+                    turnCount,
+                    isGuest,
+                }),
+            });
+
+            if (!res.ok) throw new Error("Failed to get response");
+
+            const data = await res.json();
+
+            const assistantMessage = {
+                id: Math.random().toString(36).substring(2, 15),
+                role: "assistant" as const,
+                content: data.reply,
+                timestamp: new Date(),
+                data: data.data,
+            };
+
+            addMessage(assistantMessage);
+
+            if (data.data) {
+                processAssistantData(data.data);
+            }
+
+            if (isGuest) {
+                incrementTurn();
+            }
+        } catch (error) {
+            console.error("Action error:", error);
+            const errMsg = {
+                id: Math.random().toString(36).substring(2, 15),
+                role: "assistant" as const,
+                content: "I'm having trouble handling that request right now.",
+                timestamp: new Date(),
+            };
+            addMessage(errMsg);
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
     // ─── Response Block Rendering ────────────────────────────────────────
@@ -27,15 +103,7 @@ function ChatBubble({ message }: { message: ChatMessageType }) {
                     <ResponseShell
                         data={message.data.responseBlock}
                         onItemAdd={toggleItem}
-                        onAction={(actionId, payload) => {
-                            console.log("Action triggered:", actionId, payload);
-                            if (actionId === 'create_itinerary' || actionId === 'generate_itinerary') {
-                                // This should ideally trigger the generation logic. 
-                                // For now, we simulate the view switch if itinerary exists or just log.
-                                // In a real app, this would call an API or store action.
-                                console.log("Generating itinerary...");
-                            }
-                        }}
+                        onAction={handleAction}
                     />
                 </ErrorBoundary>
             </div>
@@ -47,7 +115,7 @@ function ChatBubble({ message }: { message: ChatMessageType }) {
         return (
             <div className="message-enter flex gap-3 flex-row-reverse w-full max-w-[750px] mx-auto">
                 <div className="flex flex-col gap-1 items-end max-w-[80%]">
-                    <div className="bg-[#FFF5EB] text-[#1a1a1a] px-5 py-3 rounded-[20px] rounded-tr-sm text-[15px] leading-relaxed shadow-sm border border-neutral-100">
+                    <div className="bg-[#FFF5EB] text-[#1a1a1a] px-5 py-3 rounded-[20px] rounded-tr-sm text-[15px] leading-relaxed border border-neutral-100">
                         <p className="whitespace-pre-wrap">{message.content}</p>
                     </div>
                 </div>
