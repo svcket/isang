@@ -10,6 +10,156 @@ import type { AssistantResponse } from "@/types";
 // 2. DESTINATION_INFO: Dest only
 // 3. TRIP_EDIT: Context + Refinement keywords (simplified for MVP)
 
+// ─── Region → Currency Map ─────────────────────────────────────────────
+const regionCurrencyMap: Record<string, string> = {
+    // Europe (€)
+    "france": "€", "germany": "€", "spain": "€", "italy": "€", "portugal": "€",
+    "netherlands": "€", "belgium": "€", "austria": "€", "greece": "€", "ireland": "€",
+    "finland": "€", "croatia": "€", "estonia": "€", "slovakia": "€", "slovenia": "€",
+    "malta": "€", "cyprus": "€", "luxembourg": "€", "munich": "€", "berlin": "€",
+    "amsterdam": "€", "brussels": "€", "lisbon": "€", "athens": "€", "milan": "€",
+    "florence": "€", "venice": "€", "madrid": "€", "seville": "€", "porto": "€",
+    "marseille": "€", "lyon": "€", "nice": "€", "hamburg": "€", "frankfurt": "€",
+    "vienna": "€", "salzburg": "€", "dubrovnik": "€", "prague": "€", "helsinki": "€",
+    // Europe (non-€)
+    "uk": "£", "england": "£", "london": "£", "scotland": "£", "edinburgh": "£",
+    "manchester": "£", "wales": "£", "birmingham": "£",
+    "switzerland": "CHF", "zurich": "CHF", "geneva": "CHF",
+    "sweden": "kr", "stockholm": "kr", "norway": "kr", "oslo": "kr",
+    "denmark": "kr", "copenhagen": "kr", "iceland": "kr", "reykjavik": "kr",
+    "poland": "zł", "warsaw": "zł", "krakow": "zł",
+    "czech": "Kč", "hungary": "Ft", "budapest": "Ft", "romania": "lei", "bucharest": "lei",
+    "turkey": "₺", "istanbul": "₺", "antalya": "₺", "cappadocia": "₺",
+    // Asia
+    "japan": "¥", "tokyo": "¥", "osaka": "¥", "kyoto": "¥",
+    "china": "¥", "beijing": "¥", "shanghai": "¥",
+    "korea": "₩", "seoul": "₩", "busan": "₩",
+    "thailand": "฿", "bangkok": "฿", "phuket": "฿", "chiang mai": "฿",
+    "india": "₹", "delhi": "₹", "mumbai": "₹", "goa": "₹", "jaipur": "₹",
+    "indonesia": "IDR", "bali": "IDR", "jakarta": "IDR",
+    "vietnam": "₫", "hanoi": "₫", "ho chi minh": "₫",
+    "malaysia": "RM", "kuala lumpur": "RM",
+    "singapore": "S$", "philippines": "₱", "manila": "₱",
+    "cambodia": "$", "sri lanka": "Rs",
+    // Americas
+    "usa": "$", "new york": "$", "nyc": "$", "los angeles": "$", "miami": "$",
+    "san francisco": "$", "chicago": "$", "las vegas": "$", "hawaii": "$",
+    "canada": "C$", "toronto": "C$", "vancouver": "C$", "montreal": "C$",
+    "mexico": "MX$", "cancun": "MX$", "mexico city": "MX$", "tulum": "MX$",
+    "brazil": "R$", "rio de janeiro": "R$", "sao paulo": "R$",
+    "argentina": "AR$", "buenos aires": "AR$",
+    "colombia": "COP", "bogota": "COP", "cartagena": "COP", "medellin": "COP",
+    "peru": "S/", "lima": "S/", "cusco": "S/",
+    "chile": "CLP", "santiago": "CLP",
+    "costa rica": "₡", "jamaica": "J$",
+    // Africa
+    "nigeria": "₦", "lagos": "₦", "abuja": "₦",
+    "south africa": "R", "cape town": "R", "johannesburg": "R",
+    "kenya": "KSh", "nairobi": "KSh",
+    "morocco": "MAD", "marrakech": "MAD", "casablanca": "MAD", "fez": "MAD",
+    "egypt": "E£", "cairo": "E£",
+    "ghana": "GH₵", "accra": "GH₵",
+    "tanzania": "TSh", "zanzibar": "TSh",
+    "rwanda": "RWF", "kigali": "RWF",
+    "ethiopia": "ETB", "addis ababa": "ETB",
+    "senegal": "CFA", "dakar": "CFA",
+    // Middle East
+    "dubai": "AED", "uae": "AED", "abu dhabi": "AED",
+    "qatar": "QAR", "doha": "QAR",
+    "saudi": "SAR", "riyadh": "SAR",
+    "jordan": "JOD", "amman": "JOD",
+    "israel": "₪", "tel aviv": "₪",
+    "oman": "OMR", "muscat": "OMR",
+    // Oceania
+    "australia": "A$", "sydney": "A$", "melbourne": "A$",
+    "new zealand": "NZ$", "auckland": "NZ$", "queenstown": "NZ$",
+    "fiji": "FJ$",
+};
+
+type GeoRegion = "europe" | "asia" | "americas" | "africa" | "middle_east" | "oceania";
+
+function detectRegion(destination: string): GeoRegion {
+    const lower = destination.toLowerCase();
+    const europeKeys = ["france", "germany", "spain", "italy", "portugal", "netherlands", "belgium", "austria", "greece", "ireland", "finland", "croatia", "estonia", "slovakia", "slovenia", "malta", "cyprus", "luxembourg", "uk", "england", "london", "scotland", "edinburgh", "manchester", "switzerland", "zurich", "geneva", "sweden", "stockholm", "norway", "oslo", "denmark", "copenhagen", "iceland", "reykjavik", "poland", "warsaw", "krakow", "czech", "prague", "hungary", "budapest", "romania", "bucharest", "turkey", "istanbul", "antalya", "cappadocia", "paris", "barcelona", "rome", "vienna", "salzburg", "dubrovnik", "amsterdam", "brussels", "lisbon", "athens", "milan", "florence", "venice", "madrid", "seville", "porto", "marseille", "lyon", "nice", "hamburg", "frankfurt", "munich", "berlin", "helsinki"];
+    const asiaKeys = ["japan", "tokyo", "osaka", "kyoto", "china", "beijing", "shanghai", "korea", "seoul", "busan", "thailand", "bangkok", "phuket", "chiang mai", "india", "delhi", "mumbai", "goa", "jaipur", "indonesia", "bali", "jakarta", "vietnam", "hanoi", "ho chi minh", "malaysia", "kuala lumpur", "singapore", "philippines", "manila", "cambodia", "sri lanka"];
+    const americasKeys = ["usa", "new york", "nyc", "los angeles", "miami", "san francisco", "chicago", "las vegas", "hawaii", "canada", "toronto", "vancouver", "montreal", "mexico", "cancun", "mexico city", "tulum", "brazil", "rio de janeiro", "sao paulo", "argentina", "buenos aires", "colombia", "bogota", "cartagena", "medellin", "peru", "lima", "cusco", "chile", "santiago", "costa rica", "jamaica"];
+    const africaKeys = ["nigeria", "lagos", "abuja", "south africa", "cape town", "johannesburg", "kenya", "nairobi", "morocco", "marrakech", "casablanca", "fez", "egypt", "cairo", "ghana", "accra", "tanzania", "zanzibar", "rwanda", "kigali", "ethiopia", "addis ababa", "senegal", "dakar"];
+    const middleEastKeys = ["dubai", "uae", "abu dhabi", "qatar", "doha", "saudi", "riyadh", "jordan", "amman", "israel", "tel aviv", "oman", "muscat"];
+    const oceaniaKeys = ["australia", "sydney", "melbourne", "new zealand", "auckland", "queenstown", "fiji"];
+
+    if (europeKeys.some(k => lower.includes(k))) return "europe";
+    if (asiaKeys.some(k => lower.includes(k))) return "asia";
+    if (americasKeys.some(k => lower.includes(k))) return "americas";
+    if (africaKeys.some(k => lower.includes(k))) return "africa";
+    if (middleEastKeys.some(k => lower.includes(k))) return "middle_east";
+    if (oceaniaKeys.some(k => lower.includes(k))) return "oceania";
+    return "europe"; // reasonable global default
+}
+
+function lookupCurrency(query: string): string {
+    const lower = query.toLowerCase();
+    // Try exact match first, then partial
+    for (const [key, currency] of Object.entries(regionCurrencyMap)) {
+        if (lower.includes(key)) return currency;
+    }
+    return "$";
+}
+
+function getRegionalData(destination: string, region: GeoRegion) {
+    const city = destination.split(",")[0] || destination;
+    const regionData: Record<GeoRegion, {
+        airlines: [string, string, string];
+        hotels: [string, string, string];
+        activities: [string, string, string];
+        origin: string;
+        flightDurations: [string, string, string];
+    }> = {
+        europe: {
+            airlines: ["Lufthansa", "Air France", "KLM"],
+            hotels: [`Hotel & Spa ${city} – City Center`, `Grand Plaza ${city}`, `${city} Boutique Suites`],
+            activities: [`Old Town Walking Tour of ${city}`, `${city} Art & History Museum`, `Wine Tasting Experience`],
+            origin: "Lagos",
+            flightDurations: ["7h 30m", "9h 15m", "11h 45m"],
+        },
+        asia: {
+            airlines: ["Singapore Airlines", "Cathay Pacific", "ANA"],
+            hotels: [`${city} Imperial Hotel – City Center`, `The Peninsula ${city}`, `Mandarin Oriental ${city}`],
+            activities: [`Temple & Shrine Tour in ${city}`, `${city} Street Food Walking Tour`, `Traditional Tea Ceremony`],
+            origin: "Lagos",
+            flightDurations: ["14h 20m", "16h 10m", "18h 45m"],
+        },
+        americas: {
+            airlines: ["Delta Airlines", "American Airlines", "United Airlines"],
+            hotels: [`The ${city} Grand – Downtown`, `Hilton ${city} City Center`, `${city} Park Hotel & Suites`],
+            activities: [`${city} Neighborhood Walking Tour`, `${city} Museum of Modern Art`, `Local Food & Drink Tour`],
+            origin: "Lagos",
+            flightDurations: ["11h 40m", "13h 05m", "15h 20m"],
+        },
+        africa: {
+            airlines: ["Ethiopian Airlines", "Kenya Airways", "Air Peace"],
+            hotels: [`${city} Safari Lodge – Premium`, `The Residence ${city}`, `${city} Heritage Hotel`],
+            activities: [`Cultural Heritage Tour of ${city}`, `${city} Market & Craft Experience`, `Nature Walk & Wildlife Spotting`],
+            origin: "Lagos",
+            flightDurations: ["3h 20m", "4h 50m", "6h 15m"],
+        },
+        middle_east: {
+            airlines: ["Emirates", "Qatar Airways", "Etihad Airways"],
+            hotels: [`${city} Palace Hotel – Premium`, `The Ritz-Carlton ${city}`, `Four Seasons ${city}`],
+            activities: [`${city} Heritage Quarter Tour`, `Desert Safari & Cultural Show`, `Traditional Souk Experience`],
+            origin: "Lagos",
+            flightDurations: ["6h 45m", "8h 30m", "10h 15m"],
+        },
+        oceania: {
+            airlines: ["Qantas", "Air New Zealand", "Virgin Australia"],
+            hotels: [`${city} Harbour Hotel – Waterfront`, `The Langham ${city}`, `${city} Park Hyatt`],
+            activities: [`Coastal Walk & Beach Tour of ${city}`, `${city} Wildlife Sanctuary`, `Harbour Cruise & Sunset`],
+            origin: "Lagos",
+            flightDurations: ["22h 10m", "24h 30m", "26h 45m"],
+        },
+    };
+    return regionData[region];
+}
+
 export function generateMockResponse(
     message: string,
     turnCount: number,
@@ -24,21 +174,27 @@ export function generateMockResponse(
     function generateTripResponse(destination: string, duration: string, budget: string, travelers: string, dateInfo: string, currencySymbol: string = "$") {
         const isSantorini = destination.toLowerCase().includes("santorini");
 
-        // Normalize budget string to just get the amount if needed, but we mostly just need the symbol for new items
-        // The `budget` param is the full string "3000 dollars" or "$3000".
         // Use the passed currencySymbol for all generated items.
+        // Detect region for dynamic airline/hotel/activity selection
+        const region = detectRegion(destination);
+        const rd = getRegionalData(destination, region);
 
-        const airline1 = isSantorini ? "Ibom Airlines" : "Delta Airlines";
-        const airline2 = isSantorini ? "Qatar Airways" : "British Airways";
-        const airline3 = isSantorini ? "Air Peace" : "Lufthansa";
+        const airline1 = isSantorini ? "Ibom Airlines" : rd.airlines[0];
+        const airline2 = isSantorini ? "Qatar Airways" : rd.airlines[1];
+        const airline3 = isSantorini ? "Air Peace" : rd.airlines[2];
 
-        const hotel1 = isSantorini ? "Cavo Tagoo Santorini – luxury cave pool suites" : `Grand Hotel ${destination} – City Center`;
-        const hotel2 = isSantorini ? "Grace Hotel, Auberge Resorts Collection" : `The Ritz-Carlton ${destination}`;
-        const hotel3 = isSantorini ? "Katikies Santorini – Leading Hotels of the World" : `Marriott ${destination} Downtown`;
+        const hotel1 = isSantorini ? "Cavo Tagoo Santorini – luxury cave pool suites" : rd.hotels[0];
+        const hotel2 = isSantorini ? "Grace Hotel, Auberge Resorts Collection" : rd.hotels[1];
+        const hotel3 = isSantorini ? "Katikies Santorini – Leading Hotels of the World" : rd.hotels[2];
 
-        const activity1 = isSantorini ? "Caldera sunset walk" : `City Walking Tour of ${destination}`;
-        const activity2 = isSantorini ? "Red Beach visit" : `${destination} Museum Visit`;
-        const activity3 = isSantorini ? "Boat tour (half-day)" : `Local Food Tasting in ${destination}`;
+        const activity1 = isSantorini ? "Caldera sunset walk" : rd.activities[0];
+        const activity2 = isSantorini ? "Red Beach visit" : rd.activities[1];
+        const activity3 = isSantorini ? "Boat tour (half-day)" : rd.activities[2];
+
+        const flightDur1 = isSantorini ? "14h 20m" : rd.flightDurations[0];
+        const flightDur2 = isSantorini ? "12h 10m" : rd.flightDurations[1];
+        const flightDur3 = isSantorini ? "18h 45m" : rd.flightDurations[2];
+        const originCity = rd.origin;
 
         return {
             reply: `I've found some great options for your trip to ${destination}! Here are the best flights and some top-rated places to stay.`,
@@ -74,28 +230,28 @@ export function generateMockResponse(
                                     id: "f1",
                                     title: airline1,
                                     image_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(airline1)}&background=0D47A1&color=fff&size=64&bold=true&format=png`,
-                                    meta: ["Lagos", destination.split(",")[0] || destination, "Round trip", "Direct"],
+                                    meta: [originCity, destination.split(",")[0] || destination, "Round trip", "Direct"],
                                     price_chip: `${currencySymbol}1,250`,
                                     price: `${currencySymbol}1,250`,
-                                    subtext: "Economy • 14h 20m"
+                                    subtext: `Economy • ${flightDur1}`
                                 },
                                 {
                                     id: "f2",
                                     title: airline2,
                                     image_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(airline2)}&background=7B1FA2&color=fff&size=64&bold=true&format=png`,
-                                    meta: ["Lagos", destination, "Round trip", "1 stop"],
+                                    meta: [originCity, destination, "Round trip", "1 stop"],
                                     price_chip: `${currencySymbol}1,850`,
                                     price: `${currencySymbol}1,850`,
-                                    subtext: "Economy • 12h 10m"
+                                    subtext: `Economy • ${flightDur2}`
                                 },
                                 {
                                     id: "f3",
                                     title: airline3,
                                     image_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(airline3)}&background=1B5E20&color=fff&size=64&bold=true&format=png`,
-                                    meta: ["Lagos", destination, "Round trip", "2 stops"],
+                                    meta: [originCity, destination, "Round trip", "2 stops"],
                                     price_chip: `${currencySymbol}950`,
                                     price: `${currencySymbol}950`,
-                                    subtext: "Economy • 18h 45m"
+                                    subtext: `Economy • ${flightDur3}`
                                 }
                             ]
                         },
@@ -374,7 +530,7 @@ export function generateMockResponse(
     // If we have a detected strict destination OR if the input is short enough to be a destination query
 
     let targetDest = filters?.destination || (detectedDest ? detectedDest.dest : null);
-    const targetCurrency = detectedDest ? detectedDest.currency : "$";
+    const targetCurrency = detectedDest ? detectedDest.currency : lookupCurrency(targetDest || message);
 
     // Fallback: Attempt to extract destination from "Trip to X" or just treat the whole string as dest if short
     if (!targetDest) {
@@ -751,93 +907,69 @@ function getHighlights(destination: string) {
         ];
     }
 
-    // Generic fallback with specific-sounding places
-    return [
-        {
-            id: "h1",
-            title: `The Grand ${destination} Museum`,
-            description: `A stunning collection of art and history that tells the captivating story of ${destination} from ancient times to modern day.`,
-            photo_urls: [
-                "https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1513439339735-b1ff811dfdc0?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=400&h=300&fit=crop"
-            ],
-            actions: []
-        },
-        {
-            id: "h2",
-            title: `Historic Old Town ${destination}`,
-            description: `Wander through the narrow, winding streets of the old town, filled with centuries-old architecture, charming cafes, and hidden courtyards.`,
-            photo_urls: [
-                "https://images.unsplash.com/photo-1519677100203-a0e668c92439?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1504512485720-7d83a16ee930?w=400&h=300&fit=crop"
-            ],
-            actions: []
-        },
-        {
-            id: "h3",
-            title: `${destination} Central Market`,
-            description: `A bustling hub of local life. Taste authentic street food, buy fresh produce, and experience the pure energy of ${destination}.`,
-            photo_urls: [
-                "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&h=300&fit=crop"
-            ],
-            actions: []
-        },
-        {
-            id: "h4",
-            title: `Panoramic ${destination} Tower`,
-            description: `Take an elevator to the observation deck for breathtaking, 360-degree views of the entire city skyline and surrounding natural beauty.`,
-            photo_urls: [
-                "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=400&h=300&fit=crop"
-            ],
-            actions: []
-        },
-        {
-            id: "h5",
-            title: `The Royal Botanical Gardens`,
-            description: `Escape the urban rush in these pristine, beautifully manicured gardens. A perfect spot for a peaceful afternoon stroll.`,
-            photo_urls: [
-                "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1558293842-c0fd3db86157?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1588392382834-a891154bca4d?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1416169607655-0c2b3ce2e1cc?w=400&h=300&fit=crop"
-            ],
-            actions: []
-        },
-        {
-            id: "h6",
-            title: `${destination} Waterfront Promenade`,
-            description: `Walk along the water's edge at sunset. Lined with premium restaurants and boutique shops, it's the premium evening destination.`,
-            photo_urls: [
-                "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1471922694854-ff1b63b20054?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=400&h=300&fit=crop"
-            ],
-            actions: []
-        },
-        {
-            id: "h7",
-            title: `Cathedral of ${destination}`,
-            description: `An architectural masterpiece. The intricate stained glass and towering spires make this historic cathedral a must-visit landmark.`,
-            photo_urls: [
-                "https://images.unsplash.com/photo-1548585744-4e0e8b62a20d?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1510590337019-5ef8d3d32116?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1543349689-9a4d426bee8e?w=400&h=300&fit=crop",
-                "https://images.unsplash.com/photo-1603052875990-1af678d81c08?w=400&h=300&fit=crop"
-            ],
-            actions: []
-        }
-    ];
+    // Region-aware generic fallback
+    const region = detectRegion(destination);
+
+    // Region-specific highlight templates
+    const regionHighlights: Record<GeoRegion, Array<{ title: string; description: string; photos: string[] }>> = {
+        europe: [
+            { title: `The Grand ${destination} Museum`, description: `A stunning collection of art and history that tells the captivating story of ${destination} from ancient times to modern day.`, photos: ["photo-1554907984-15263bfd63bd", "photo-1566127444979-b3d2b654e3d7", "photo-1513439339735-b1ff811dfdc0", "photo-1568605117036-5fe5e7bab0b7"] },
+            { title: `Historic Old Town ${destination}`, description: `Wander through the narrow, winding streets of the old town, filled with centuries-old architecture, charming cafes, and hidden courtyards.`, photos: ["photo-1519677100203-a0e668c92439", "photo-1534430480872-3498386e7856", "photo-1555992336-03a23c7b20ee", "photo-1504512485720-7d83a16ee930"] },
+            { title: `${destination} Central Market`, description: `A bustling hub of local life. Sample artisan cheeses, fresh bread, seasonal produce and local wine at this beloved market.`, photos: ["photo-1555396273-367ea4eb4db5", "photo-1488459716781-31db52582fe9", "photo-1533900298318-6b8da08a523e", "photo-1464226184884-fa280b87c399"] },
+            { title: `Cathedral of ${destination}`, description: `An architectural masterpiece. The intricate stained glass and towering spires make this historic cathedral a must-visit landmark.`, photos: ["photo-1548585744-4e0e8b62a20d", "photo-1510590337019-5ef8d3d32116", "photo-1543349689-9a4d426bee8e", "photo-1603052875990-1af678d81c08"] },
+            { title: `${destination} Wine & Gastronomy Trail`, description: `Follow the local food trail through family-run trattorias, vineyard estates, and patisseries that have served generations.`, photos: ["photo-1507525428034-b723cf961d3e", "photo-1519046904884-53103b34b206", "photo-1471922694854-ff1b63b20054", "photo-1473116763249-2faaef81ccda"] },
+            { title: `${destination} Botanical Gardens`, description: `Escape the urban rush in these pristine, beautifully manicured gardens — a haven of rare plant species and tranquil walkways.`, photos: ["photo-1585320806297-9794b3e4eeae", "photo-1558293842-c0fd3db86157", "photo-1588392382834-a891154bca4d", "photo-1416169607655-0c2b3ce2e1cc"] },
+        ],
+        asia: [
+            { title: `Ancient Temples of ${destination}`, description: `Discover centuries-old temples adorned with intricate carvings, golden spires, and sacred relics that tell the spiritual story of the region.`, photos: ["photo-1554907984-15263bfd63bd", "photo-1566127444979-b3d2b654e3d7", "photo-1513439339735-b1ff811dfdc0", "photo-1568605117036-5fe5e7bab0b7"] },
+            { title: `${destination} Night Market`, description: `As the sun sets, the streets come alive with sizzling woks, vendor calls, and the glow of lanterns. Street food heaven awaits.`, photos: ["photo-1555396273-367ea4eb4db5", "photo-1488459716781-31db52582fe9", "photo-1533900298318-6b8da08a523e", "photo-1464226184884-fa280b87c399"] },
+            { title: `${destination} Imperial Gardens`, description: `Stroll through meticulously designed gardens where every stone, tree, and pond is placed with centuries of aesthetic tradition.`, photos: ["photo-1585320806297-9794b3e4eeae", "photo-1558293842-c0fd3db86157", "photo-1588392382834-a891154bca4d", "photo-1416169607655-0c2b3ce2e1cc"] },
+            { title: `Traditional Tea Houses`, description: `Experience the meditative art of tea ceremony in a traditional setting — a ritual that has been perfected over centuries.`, photos: ["photo-1519677100203-a0e668c92439", "photo-1534430480872-3498386e7856", "photo-1555992336-03a23c7b20ee", "photo-1504512485720-7d83a16ee930"] },
+            { title: `${destination} Craft & Art District`, description: `From hand-painted ceramics to silk weaving, discover the living artisan traditions that make this city a cultural treasure.`, photos: ["photo-1477959858617-67f85cf4f1df", "photo-1514565131-fce0801e5785", "photo-1449824913935-59a10b8d2000", "photo-1480714378408-67cf0d13bc1b"] },
+            { title: `Panoramic ${destination} Viewpoint`, description: `Climb to the highest point for sweeping views of temple rooftops, city skyline, and surrounding mountains or coastline.`, photos: ["photo-1507525428034-b723cf961d3e", "photo-1519046904884-53103b34b206", "photo-1471922694854-ff1b63b20054", "photo-1473116763249-2faaef81ccda"] },
+        ],
+        americas: [
+            { title: `${destination} Museum of Modern Art`, description: `World-class contemporary art spanning painting, sculpture, photography, and digital installations from local and international artists.`, photos: ["photo-1554907984-15263bfd63bd", "photo-1566127444979-b3d2b654e3d7", "photo-1513439339735-b1ff811dfdc0", "photo-1568605117036-5fe5e7bab0b7"] },
+            { title: `Historic ${destination} Quarter`, description: `Cobblestone streets, colonial-era facades, and vibrant murals that tell the story of this city's rich and complex history.`, photos: ["photo-1519677100203-a0e668c92439", "photo-1534430480872-3498386e7856", "photo-1555992336-03a23c7b20ee", "photo-1504512485720-7d83a16ee930"] },
+            { title: `${destination} Food Scene`, description: `From Michelin-starred restaurants to hole-in-the-wall taquerias, this city's food scene rivals any in the world.`, photos: ["photo-1555396273-367ea4eb4db5", "photo-1488459716781-31db52582fe9", "photo-1533900298318-6b8da08a523e", "photo-1464226184884-fa280b87c399"] },
+            { title: `${destination} Skyline Walk`, description: `Take the elevated walkway for panoramic views of the downtown skyline — especially stunning at golden hour.`, photos: ["photo-1477959858617-67f85cf4f1df", "photo-1514565131-fce0801e5785", "photo-1449824913935-59a10b8d2000", "photo-1480714378408-67cf0d13bc1b"] },
+            { title: `Live Music & Nightlife`, description: `Jazz clubs, rooftop bars, and underground music venues — ${destination} comes alive after dark with world-class entertainment.`, photos: ["photo-1507525428034-b723cf961d3e", "photo-1519046904884-53103b34b206", "photo-1471922694854-ff1b63b20054", "photo-1473116763249-2faaef81ccda"] },
+            { title: `${destination} Nature Escapes`, description: `National parks, coastal trails, and mountain lookouts within easy reach of the city center — perfect for a day trip.`, photos: ["photo-1585320806297-9794b3e4eeae", "photo-1558293842-c0fd3db86157", "photo-1588392382834-a891154bca4d", "photo-1416169607655-0c2b3ce2e1cc"] },
+        ],
+        africa: [
+            { title: `${destination} Heritage Museum`, description: `Trace the deep roots of this region's history through artefacts, oral traditions, and interactive exhibitions spanning millennia.`, photos: ["photo-1554907984-15263bfd63bd", "photo-1566127444979-b3d2b654e3d7", "photo-1513439339735-b1ff811dfdc0", "photo-1568605117036-5fe5e7bab0b7"] },
+            { title: `${destination} Craft Markets`, description: `Handwoven textiles, carved masks, beaded jewelry, and local craftsmanship displayed across vibrant open-air market stalls.`, photos: ["photo-1555396273-367ea4eb4db5", "photo-1488459716781-31db52582fe9", "photo-1533900298318-6b8da08a523e", "photo-1464226184884-fa280b87c399"] },
+            { title: `Wildlife & Nature Reserve`, description: `Spot big game, rare birds, and stunning landscapes in one of the region's premier wildlife reserves — an unforgettable experience.`, photos: ["photo-1585320806297-9794b3e4eeae", "photo-1558293842-c0fd3db86157", "photo-1588392382834-a891154bca4d", "photo-1416169607655-0c2b3ce2e1cc"] },
+            { title: `${destination} Food & Spice Trail`, description: `From jollof to tagine, the flavors here are bold and unforgettable. Follow the spice trail through local kitchens and street stalls.`, photos: ["photo-1519677100203-a0e668c92439", "photo-1534430480872-3498386e7856", "photo-1555992336-03a23c7b20ee", "photo-1504512485720-7d83a16ee930"] },
+            { title: `Sunset Viewpoint`, description: `Watch the sun dip over the savanna, coastline, or city rooftops from the most photographed vantage point in ${destination}.`, photos: ["photo-1477959858617-67f85cf4f1df", "photo-1514565131-fce0801e5785", "photo-1449824913935-59a10b8d2000", "photo-1480714378408-67cf0d13bc1b"] },
+            { title: `${destination} Music & Dance`, description: `Hear the rhythms that have shaped global music. From drum circles to live afrobeats, the sound of ${destination} stays with you.`, photos: ["photo-1507525428034-b723cf961d3e", "photo-1519046904884-53103b34b206", "photo-1471922694854-ff1b63b20054", "photo-1473116763249-2faaef81ccda"] },
+        ],
+        middle_east: [
+            { title: `${destination} Grand Mosque`, description: `A masterpiece of Islamic architecture — soaring minarets, intricate calligraphy, and a vast courtyard that takes your breath away.`, photos: ["photo-1548585744-4e0e8b62a20d", "photo-1510590337019-5ef8d3d32116", "photo-1543349689-9a4d426bee8e", "photo-1603052875990-1af678d81c08"] },
+            { title: `The Old Souk`, description: `Lose yourself in the winding alleys of the traditional souk. Spices, perfumes, fabrics, and gold — a sensory overload in the best way.`, photos: ["photo-1555396273-367ea4eb4db5", "photo-1488459716781-31db52582fe9", "photo-1533900298318-6b8da08a523e", "photo-1464226184884-fa280b87c399"] },
+            { title: `Desert Dunes & Stargazing`, description: `Ride the golden dunes at sunset, then lie back under the clearest night sky you've ever seen — a humbling, unforgettable experience.`, photos: ["photo-1585320806297-9794b3e4eeae", "photo-1558293842-c0fd3db86157", "photo-1588392382834-a891154bca4d", "photo-1416169607655-0c2b3ce2e1cc"] },
+            { title: `${destination} Palace Museum`, description: `Step inside a former royal palace turned museum — opulent interiors, royal gardens, and a glimpse into centuries of dynastic history.`, photos: ["photo-1554907984-15263bfd63bd", "photo-1566127444979-b3d2b654e3d7", "photo-1513439339735-b1ff811dfdc0", "photo-1568605117036-5fe5e7bab0b7"] },
+            { title: `${destination} Waterfront`, description: `The modern promenade along the water is lined with architectural marvels, luxury dining, and the kind of sunset views that stop traffic.`, photos: ["photo-1507525428034-b723cf961d3e", "photo-1519046904884-53103b34b206", "photo-1471922694854-ff1b63b20054", "photo-1473116763249-2faaef81ccda"] },
+            { title: `Traditional Cuisine Experience`, description: `From mezze platters to slow-cooked tagines, the food here is a celebration of centuries-old culinary traditions and fresh local ingredients.`, photos: ["photo-1519677100203-a0e668c92439", "photo-1534430480872-3498386e7856", "photo-1555992336-03a23c7b20ee", "photo-1504512485720-7d83a16ee930"] },
+        ],
+        oceania: [
+            { title: `${destination} Harbour & Waterfront`, description: `One of the world's most beautiful natural harbours. Walk the foreshore, catch a ferry, and watch the city sparkle from the water.`, photos: ["photo-1507525428034-b723cf961d3e", "photo-1519046904884-53103b34b206", "photo-1471922694854-ff1b63b20054", "photo-1473116763249-2faaef81ccda"] },
+            { title: `Coastal Walk & Beaches`, description: `Golden sand, turquoise water, and dramatic cliff walks — the coastline around ${destination} is world-class and mostly free.`, photos: ["photo-1585320806297-9794b3e4eeae", "photo-1558293842-c0fd3db86157", "photo-1588392382834-a891154bca4d", "photo-1416169607655-0c2b3ce2e1cc"] },
+            { title: `${destination} Botanical Gardens`, description: `Lush tropical and native gardens set against a harbour backdrop — perfect for a morning stroll or afternoon picnic.`, photos: ["photo-1519677100203-a0e668c92439", "photo-1534430480872-3498386e7856", "photo-1555992336-03a23c7b20ee", "photo-1504512485720-7d83a16ee930"] },
+            { title: `Wildlife Encounters`, description: `From kangaroos to kiwis, the local wildlife is unique and surprisingly accessible — sanctuaries and reserves are never far away.`, photos: ["photo-1554907984-15263bfd63bd", "photo-1566127444979-b3d2b654e3d7", "photo-1513439339735-b1ff811dfdc0", "photo-1568605117036-5fe5e7bab0b7"] },
+            { title: `${destination} Food & Coffee Scene`, description: `World-renowned coffee culture meets fresh seafood and farm-to-table dining. The brunch scene alone is worth the trip.`, photos: ["photo-1555396273-367ea4eb4db5", "photo-1488459716781-31db52582fe9", "photo-1533900298318-6b8da08a523e", "photo-1464226184884-fa280b87c399"] },
+            { title: `${destination} Lookout Point`, description: `Hike or drive to the highest vantage point for panoramic views of the coastline, city, and mountain ranges beyond.`, photos: ["photo-1477959858617-67f85cf4f1df", "photo-1514565131-fce0801e5785", "photo-1449824913935-59a10b8d2000", "photo-1480714378408-67cf0d13bc1b"] },
+        ],
+    };
+
+    const highlights = regionHighlights[region];
+    return highlights.map((h, i) => ({
+        id: `h${i + 1}`,
+        title: h.title,
+        description: h.description,
+        photo_urls: h.photos.map(p => `https://images.unsplash.com/${p}?w=400&h=300&fit=crop`),
+        actions: []
+    }));
 }
 
 // ─── Hyper-Local Itinerary Generator ───────────────────────────────────
@@ -1307,7 +1439,7 @@ function generateDailyItinerary(destination: string, days: number, currency: str
             overview: `Touch down in ${city} and let the city introduce itself. Drop your bags and head straight into the old town — the architecture, the street sounds, the café culture all set the tone. Find a terrace with a view and settle into the pace of this place.`,
             beats: [
                 { title: "Morning", content: `Arrive in ${city}; transfer to your hotel in the city centre.` },
-                { title: "Afternoon", content: "Wander the old town district — historic squares, local cafés, street vendors." },
+                { title: "Noon", content: "Wander the old town district — historic squares, local cafés, street vendors." },
                 { title: "Evening", content: "Dinner at a well-reviewed neighbourhood restaurant; try the local signature dish." }
             ],
             tip: { label: "Local Tip", text: `Ask your hotel front desk for their personal favourite restaurant — you'll eat better than any guidebook can promise.` },
@@ -1318,7 +1450,7 @@ function generateDailyItinerary(destination: string, days: number, currency: str
             overview: `Today is about the stories this city tells through its buildings and art. Hit the main museum early, then walk through the historic quarter where centuries of architecture stack up side by side. The afternoon belongs to the kind of wandering where you turn corners and find treasures.`,
             beats: [
                 { title: "Morning", content: "Visit the city's main museum or gallery — arrive at opening for empty halls." },
-                { title: "Afternoon", content: "Walk the historic quarter; photograph architecture and visit a lesser-known chapel or monument." },
+                { title: "Noon", content: "Walk the historic quarter; photograph architecture and visit a lesser-known chapel or monument." },
                 { title: "Evening", content: "Dinner in the arts district; live music at a local jazz or folk venue." }
             ],
             tip: { label: "Safety Tip", text: "Keep a photocopy of your passport in a separate bag from the original. Most embassies can process replacements faster with a copy." },
@@ -1329,7 +1461,7 @@ function generateDailyItinerary(destination: string, days: number, currency: str
             overview: `Leave the city grid behind today. Whether it's a coastal path, a mountain viewpoint, or a botanical garden — ${city} has green lungs worth finding. Pack a picnic, hike to the best view you can find, and understand why the locals never want to leave.`,
             beats: [
                 { title: "Morning", content: "Head to the nearest natural landmark — park, coastal trail, or mountain lookout." },
-                { title: "Afternoon", content: "Picnic lunch with a view; take the scenic route back through a quiet village or suburb." },
+                { title: "Noon", content: "Picnic lunch with a view; take the scenic route back through a quiet village or suburb." },
                 { title: "Evening", content: "Light dinner at a garden restaurant; early rest for tomorrow's market day." }
             ],
             tip: { label: "Weather Tip", text: "Morning light is best for photos and cooler for hiking. Bring layers — altitude and coast can shift temperatures fast." },
@@ -1340,7 +1472,7 @@ function generateDailyItinerary(destination: string, days: number, currency: str
             overview: `This is the day you eat like a local. Find the central market where vendors shout prices and the produce glistens. Taste everything you can't pronounce. The afternoon is for the food streets — those narrow lanes where every doorway smells different and portions are generous.`,
             beats: [
                 { title: "Morning", content: "Central market visit — fresh produce, spices, street food breakfast." },
-                { title: "Afternoon", content: "Cooking class or food tour through the local food streets." },
+                { title: "Noon", content: "Cooking class or food tour through the local food streets." },
                 { title: "Evening", content: "Rooftop dinner or waterfront restaurant; order the chef's recommendation." }
             ],
             tip: { label: "Food Tip", text: "Markets are cheapest and freshest before 10am. Bring cash in small denominations — vendors rarely have change for large notes." },
@@ -1351,7 +1483,7 @@ function generateDailyItinerary(destination: string, days: number, currency: str
             overview: `Some of the best experiences near ${city} are an hour outside it. Take a day trip to a nearby village, vineyard region, or coastal town that the guidebooks barely mention. Travel slow, talk to locals, and find the spots that make you consider extending your trip.`,
             beats: [
                 { title: "Morning", content: "Train or bus to a nearby town — vineyards, coastline, or mountain village." },
-                { title: "Afternoon", content: "Explore on foot; local lunch at a family-run restaurant." },
+                { title: "Noon", content: "Explore on foot; local lunch at a family-run restaurant." },
                 { title: "Evening", content: "Return to the city; relaxed dinner at your favourite spot from earlier in the trip." }
             ],
             tip: { label: "Local Tip", text: "Regional trains are usually cheaper and more scenic than express services. Book at the station, not through third-party apps." },
@@ -1362,7 +1494,7 @@ function generateDailyItinerary(destination: string, days: number, currency: str
             overview: `Your final day. Morning for the things you missed — that viewpoint, that shop, that café you walked past on day one. Afternoon for souvenirs that actually mean something. And the evening? Find the spot with the best sunset in ${city} and let this trip end the way it deserves.`,
             beats: [
                 { title: "Morning", content: "Return to your favourite neighbourhood; revisit the best café for one last coffee." },
-                { title: "Afternoon", content: "Souvenir shopping in the artisan quarter; pick up something handmade." },
+                { title: "Noon", content: "Souvenir shopping in the artisan quarter; pick up something handmade." },
                 { title: "Evening", content: "Farewell dinner at the best-rated restaurant you haven't tried yet." }
             ],
             tip: { label: "Relaxation Tips", text: "Don't over-schedule your last day. Leave room for the unplanned — that's where the best travel memories live." },
