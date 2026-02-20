@@ -33,6 +33,7 @@ export default function ChatInput() {
         setShowAuthModal,
         messages,
         tripSnapshot,
+        filterState,
     } = useAppStore();
 
     const isLocked = isGuest && turnCount >= maxGuestTurns;
@@ -101,6 +102,7 @@ export default function ChatInput() {
                     tripSnapshot,
                     turnCount,
                     isGuest,
+                    filters: filterState,
                 }),
             });
 
@@ -148,6 +150,7 @@ export default function ChatInput() {
         tripSnapshot,
         turnCount,
         isGuest,
+        filterState,
     ]);
 
     if (isLocked) {
@@ -267,7 +270,7 @@ export default function ChatInput() {
                         remaining ·{" "}
                         <button
                             onClick={() => setShowAuthModal(true)}
-                            className="underline hover:text-primary transition-colors"
+                            className="underline hover:text-[#FF4405] transition-colors"
                         >
                             Create account to save your trip
                         </button>

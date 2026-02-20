@@ -6,6 +6,8 @@ import StaysSection from "./sections/StaysSection";
 import FoodSection from "./sections/FoodSection";
 import ActivitySection from "./sections/ActivitySection";
 import ItineraryResponseShell from "./itinerary/ItineraryResponseShell";
+import DestinationInfoResponse from "./destination/DestinationInfoResponse";
+import DestinationSuggestionCard from "./sections/DestinationSuggestionCard";
 
 // Helper to map generic Item to FlightItem
 function mapToFlightItems(items: any[]): FlightItem[] {
@@ -26,13 +28,24 @@ interface ResponseShellProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
     onItemAdd?: (id: string) => void;
-    onAction?: (actionId: string, payload?: unknown) => void;
+    onAction?: (actionId: string, payload?: unknown, label?: string) => void;
     className?: string;
+    selectedHighlights?: string[];
+    onToggleHighlight?: (id: string) => void;
 }
 
-export default function ResponseShell({ data: rawData, onItemAdd, onAction, className }: ResponseShellProps) {
+export default function ResponseShell({
+    data: rawData,
+    onItemAdd,
+    onAction,
+    className,
+    selectedHighlights,
+    onToggleHighlight
+}: ResponseShellProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data = rawData as any;
+
+
 
     // ─── ITINERARY VIEW ───────────────────────────────────────────────
     if (data.type === 'ITINERARY') {
@@ -45,9 +58,11 @@ export default function ResponseShell({ data: rawData, onItemAdd, onAction, clas
         );
     }
 
+
+
     // ─── STANDARD VIEW (Plan / Info / Edit) ───────────────────────────
     return (
-        <div className={cn("w-full space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-500 bg-white p-5 rounded-2xl border border-neutral-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)]", className)}>
+        <div className={cn("w-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500 bg-white p-5 rounded-2xl border border-neutral-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)]", className)}>
 
             {/* 1. Trip Meta Header (Moved to AppHeader) */}
 
@@ -60,8 +75,20 @@ export default function ResponseShell({ data: rawData, onItemAdd, onAction, clas
                 </div>
             )}
 
-            {/* 3. Sections */}
-            <div className="space-y-6">
+            {/* 3. Sections (TRIP_PLAN) */}
+            <div className="flex flex-col gap-4">
+                {/* DESTINATION_INFO Blocks */}
+                {data.type === 'DESTINATION_INFO' && data.blocks && (
+                    <DestinationInfoResponse
+                        blocks={data.blocks}
+                        ui_hints={data.ui_hints}
+                        suggestions={data.suggestions}
+                        onAction={onAction}
+                        selectedHighlights={selectedHighlights || []}
+                        onToggleHighlight={onToggleHighlight || (() => { })}
+                    />
+                )}
+
                 {/* Sections */}
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {data.sections?.map((section: any) => {
@@ -106,6 +133,28 @@ export default function ResponseShell({ data: rawData, onItemAdd, onAction, clas
                         );
                     }
 
+                    if (section.type === 'DESTINATION') {
+                        return (
+                            <div key={section.id} className="flex flex-col gap-3">
+                                <h3 className="text-[15px] font-semibold text-neutral-900 px-1">{section.title}</h3>
+                                <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
+                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                    {section.items.map((item: any) => (
+                                        <DestinationSuggestionCard
+                                            key={item.id}
+                                            id={item.id}
+                                            title={item.title}
+                                            imageUrl={item.image_url}
+                                            meta={item.meta || []}
+                                            priceChip={item.price_chip}
+                                            onViewPlan={(_id, destination) => onAction?.('view_plan', { destination }, 'View plan')}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    }
+
                     if (section.type === 'HIGHLIGHT' && false) {
                         return (
                             <SectionCard
@@ -136,12 +185,12 @@ export default function ResponseShell({ data: rawData, onItemAdd, onAction, clas
                     {data.actions.map((action: any) => (
                         <Button
                             key={action.action_id}
-                            onClick={() => onAction?.(action.action_id, action.payload)}
+                            onClick={() => onAction?.(action.action_id, action.payload, action.label)}
                             variant={action.style === 'PRIMARY' ? 'default' : 'outline'}
                             className={cn(
-                                "w-full sm:w-auto",
-                                action.style === 'PRIMARY' && "bg-neutral-900 text-white hover:bg-neutral-800 shadow-md",
-                                action.style === 'SECONDARY' && "border-input bg-background hover:bg-accent hover:text-accent-foreground"
+                                "w-full sm:w-auto h-10 rounded-full px-6 text-[14px] font-medium",
+                                action.style === 'PRIMARY' && "bg-neutral-900 text-white hover:bg-neutral-800 shadow-sm",
+                                action.style === 'SECONDARY' && "border-neutral-200 text-neutral-900 bg-background hover:bg-neutral-50 shadow-sm"
                             )}
                         >
                             {action.label}

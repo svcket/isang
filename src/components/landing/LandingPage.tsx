@@ -6,6 +6,7 @@ import type { ChatMessage, AssistantResponse } from "@/types";
 import { Paperclip, Mic, ArrowUp, Image as ImageIcon, FileText } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
+import { DateRangePicker } from "@/components/ui/DateRangePicker";
 import { DestinationInput } from "./DestinationInput";
 import {
     Popover,
@@ -94,6 +95,7 @@ export default function LandingPage() {
         tripSnapshot,
         turnCount,
         isGuest,
+        setFilter,
     } = useAppStore();
 
     // Auto-calculate duration when date range changes
@@ -237,10 +239,23 @@ export default function LandingPage() {
         const location = destination || "somewhere";
         const dur = duration || "a few";
 
+        // Sync to global filterState so FiltersBar reflects the input!
+        if (destination) setFilter("destination", destination);
+        if (dateRange?.from) {
+            setFilter("dates", {
+                start: format(dateRange.from, "yyyy-MM-dd"),
+                end: dateRange.to ? format(dateRange.to, "yyyy-MM-dd") : null
+            });
+        }
+        if (rawBudget !== "undecided") {
+            const num = parseInt(rawBudget, 10);
+            if (!isNaN(num)) setFilter("budget", { amount: num, currency: "USD" });
+        }
+
         const prompt = `I'm headed to ${location} starting ${dateText}, for ${dur} days with a budget of ${rawBudget !== "undecided" ? "$" + rawBudget : "undecided"}`;
 
         await processMessage(prompt);
-    }, [destination, dateRange, duration, budget, isLoading, processMessage]);
+    }, [destination, dateRange, duration, budget, isLoading, processMessage, setFilter]);
 
     /* ── Bottom Input Handler ───────────────────────────────────────── */
     const handleBottomSubmit = useCallback(async () => {
@@ -293,80 +308,12 @@ export default function LandingPage() {
                                 </button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0 border-none shadow-2xl rounded-2xl overflow-hidden" align="center">
-                                <div className="bg-white p-6">
-                                    <Calendar
-                                        mode="range"
-                                        selected={dateRange}
-                                        onSelect={setDateRange}
-                                        numberOfMonths={2}
-                                        initialFocus
-                                        defaultMonth={dateRange?.from}
-                                        pagedNavigation
-                                        fixedWeeks
-                                        showOutsideDays
-                                        className="rounded-md"
-                                        classNames={{
-                                            months: "flex flex-col sm:flex-row space-y-4 sm:space-x-12 sm:space-y-0 relative",
-                                            month: "space-y-6 text-center select-none",
-                                            caption: "flex justify-center pt-1 relative items-center mb-4",
-                                            caption_label: "text-lg font-medium text-neutral-800",
-                                            nav: "space-x-1 flex items-center absolute w-full justify-between top-0 px-2 pointer-events-none",
-                                            nav_button: cn(
-                                                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 pointer-events-auto"
-                                            ),
-                                            nav_button_previous: "absolute left-2 top-0",
-                                            nav_button_next: "absolute right-2 top-0",
-                                            table: "w-full border-collapse space-y-1 mx-auto relative z-10",
-                                            head_row: "flex mb-2",
-                                            head_cell: "text-neutral-400 rounded-md w-11 font-medium text-[0.8rem] uppercase tracking-wide",
-                                            row: "flex w-full mt-2",
-
-                                            // Reset cell to basic, relying on day_ styling for range strips
-                                            cell: "relative w-11 h-11 text-center p-0",
-                                            day: "w-11 h-11 rounded-lg hover:bg-neutral-100 font-normal cursor-pointer transition-colors",
-
-                                            // Primary selected day
-                                            day_selected: "!bg-[#FF4405] !text-white hover:!bg-[#FF4405] hover:!text-white",
-                                            day_today: "font-semibold text-[#FF4405]",
-
-                                            // Range styling adapted from user snippet to Isang colors
-                                            // Enhanced with !important to ensure override
-                                            day_range_start: "!bg-[#FF4405] !text-white !rounded-l-lg !rounded-r-none hover:!bg-[#FF4405] z-10 relative",
-                                            day_range_end: "!bg-[#FF4405] !text-white !rounded-r-lg !rounded-l-none hover:!bg-[#FF4405] z-10 relative",
-                                            day_range_middle: "!bg-[#FFE0D1] !text-[#331D12] !rounded-none hover:!bg-[#FFE0D1]",
-
-                                            day_outside: "text-neutral-300 opacity-50",
-                                            day_disabled: "text-neutral-300 opacity-50",
-                                            day_hidden: "invisible",
-                                        }}
-                                        styles={{
-                                            day_range_middle: { borderRadius: 0 },
-                                        }}
-                                    />
-                                </div>
-                                {/* Footer */}
-                                <div className="flex items-center justify-between border-t border-neutral-100 bg-white px-6 py-4">
-                                    <span className="text-sm font-medium text-neutral-600">
-                                        {duration ? `${duration} days` : "Select dates"}
-                                        {dateRange?.from && ` - ${format(dateRange.from, "MMM d")}`}
-                                        {dateRange?.to && ` - ${format(dateRange.to, "d")}`}
-                                    </span>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => setDateRange(undefined)}
-                                            className="px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors"
-                                            disabled={!dateRange}
-                                        >
-                                            Clear
-                                        </button>
-                                        <button
-                                            onClick={() => setIsCalendarOpen(false)}
-                                            className="rounded-lg bg-[#FF4405] px-4 py-2 text-sm font-bold text-white hover:bg-[#e63d05] transition-colors shadow-sm"
-                                        >
-                                            Save date
-                                        </button>
-                                    </div>
-                                </div>
+                                <DateRangePicker
+                                    dateRange={dateRange}
+                                    onDateRangeChange={setDateRange}
+                                    onClear={() => setDateRange(undefined)}
+                                    onSave={() => setIsCalendarOpen(false)}
+                                />
                             </PopoverContent>
                         </Popover>
                         , for{" "}

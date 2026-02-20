@@ -12,7 +12,7 @@ export default function ItineraryFooterActions({ onEdit }: ItineraryFooterAction
             <Button
                 variant="outline"
                 onClick={onEdit}
-                className="w-full sm:w-auto border-neutral-200 text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50"
+                className="w-full sm:w-auto rounded-full border-neutral-200 text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50"
             >
                 Show or edit itinerary
             </Button>

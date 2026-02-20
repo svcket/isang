@@ -17,6 +17,7 @@ export default function ItemCard({ item, onAdd, className }: ItemCardProps) {
                     src={item.image_url || "/placeholder-image.jpg"} // Fallback needed
                     alt={item.title}
                     fill
+                    unoptimized
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                     sizes="220px"
                 />

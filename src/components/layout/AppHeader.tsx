@@ -2,15 +2,15 @@
 
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
-import {
-    MessageCircle,
-    LayoutGrid,
-    CalendarDays,
-    RotateCcw,
-} from "lucide-react";
-import TripSummaryHeader from "@/components/response/TripSummaryHeader";
+import Link from "next/link";
+import { MessageCircle, LayoutGrid, CalendarDays, RotateCcw } from "lucide-react";
+import { FiltersBar } from "@/components/filters/FiltersBar";
+import { useHydrateFilters } from "@/hooks/useHydrateFilters";
 
 export default function AppHeader() {
+    // 1. Hook to sync URL params with Zustand store
+    useHydrateFilters();
+
     const activeView = useAppStore((s) => s.activeView);
     const setActiveView = useAppStore((s) => s.setActiveView);
     const suggestions = useAppStore((s) => s.suggestions);
@@ -24,15 +24,6 @@ export default function AppHeader() {
     const hasItinerary = !!itinerary;
     const isLanding = messages.length === 0;
 
-    /* ── Pre-Auth Landing Header ──────────────────────────────────── */
-    /* ── Pre-Auth Landing Header ──────────────────────────────────── */
-    // Universal Header
-    const activeTripMeta = messages
-        .slice()
-        .reverse()
-        .find((m) => m.role === "assistant" && m.data?.responseBlock?.trip_meta)?.data?.responseBlock?.trip_meta;
-
-    /* ── In-App Nav Header ────────────────────────────────────────── */
     /* ── In-App Nav Header ────────────────────────────────────────── */
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-border/50 transition-all duration-300">
@@ -40,20 +31,22 @@ export default function AppHeader() {
                 <div className="flex items-center justify-between h-16 px-6">
                     {/* Left: Logo */}
                     <div className="flex items-center gap-2.5 shrink-0 z-10">
-                        <div className="flex items-center justify-center">
-                            <img
-                                src="/onboarding/isang-response-avatar.png"
-                                alt="Isang"
-                                className="h-8 w-auto object-contain"
-                            />
-                        </div>
-                        <span className="text-xl font-bold text-neutral-900 tracking-tight">Isang</span>
+                        <Link href="/" onClick={reset} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+                            <div className="flex items-center justify-center">
+                                <img
+                                    src="/onboarding/isang-response-avatar.png"
+                                    alt="Isang"
+                                    className="h-8 w-auto object-contain"
+                                />
+                            </div>
+                            <span className="text-xl font-bold text-neutral-900 tracking-tight">Isang</span>
+                        </Link>
                     </div>
 
                     {/* Center: Trip Snapshot Pill (Absolute Center) */}
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex justify-center z-0">
-                        {!isLanding && activeTripMeta && (
-                            <TripSummaryHeader meta={activeTripMeta} />
+                        {!isLanding && (
+                            <FiltersBar />
                         )}
                     </div>
 
@@ -63,7 +56,7 @@ export default function AppHeader() {
                             <>
                                 <Button
                                     variant="ghost"
-                                    className="hidden sm:flex rounded-full text-sm font-medium hover:bg-neutral-100 border border-neutral-200 h-12 px-6"
+                                    className="hidden lg:flex rounded-full text-sm font-medium hover:bg-neutral-100 border border-neutral-200 h-12 px-6"
                                     onClick={() => setShowAuthModal(true)}
                                 >
                                     Sign In

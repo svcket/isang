@@ -9,7 +9,7 @@ import { useAppStore } from "@/lib/store";
 interface ItineraryResponseShellProps {
     days: ItineraryDay[];
     actions?: Action[];
-    onAction?: (actionId: string, payload?: unknown) => void;
+    onAction?: (actionId: string, payload?: unknown, label?: string) => void;
 }
 
 export default function ItineraryResponseShell({ days, actions, onAction }: ItineraryResponseShellProps) {
@@ -30,7 +30,7 @@ export default function ItineraryResponseShell({ days, actions, onAction }: Itin
                 if (isGuest) {
                     setShowAuthModal(true);
                 } else {
-                    onAction?.('edit_itinerary');
+                    onAction?.('edit_itinerary', undefined, 'Show or edit itinerary');
                 }
             }} />
         </div>

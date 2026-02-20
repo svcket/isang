@@ -54,6 +54,6 @@ describe("ResponseShell Component", () => {
         render(<ResponseShell data={mockData} onAction={handleAction} />);
 
         fireEvent.click(screen.getByText("Primary Action"));
-        expect(handleAction).toHaveBeenCalledWith("act-1", undefined);
+        expect(handleAction).toHaveBeenCalledWith("act-1", undefined, "Primary Action");
     });
 });

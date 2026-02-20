@@ -8,6 +8,10 @@ interface ItineraryDayCardProps {
 }
 
 export default function ItineraryDayCard({ day }: ItineraryDayCardProps) {
+    // Separate plan blocks (beats) from callout blocks (tip/spend)
+    const beats = day.blocks.filter(b => b.kind === 'plan');
+    const callouts = day.blocks.filter(b => b.kind !== 'plan');
+
     return (
         <div className="space-y-4">
             {/* Grey Header Bar */}
@@ -24,8 +28,24 @@ export default function ItineraryDayCard({ day }: ItineraryDayCardProps) {
                     {day.overview}
                 </p>
 
-                {/* Callouts */}
-                {day.blocks.filter(b => b.kind !== 'plan').map((block, index) => (
+                {/* Time Beats */}
+                {beats.length > 0 && (
+                    <div className="space-y-2.5">
+                        {beats.map((beat, index) => (
+                            <div key={index} className="flex items-start gap-3">
+                                <span className="text-[13px] font-semibold text-neutral-400 uppercase tracking-wide w-[72px] flex-shrink-0 pt-0.5">
+                                    {beat.title || ""}
+                                </span>
+                                <span className="text-[14px] text-neutral-700 leading-snug">
+                                    {beat.content}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Callouts (Tip + Spend) */}
+                {callouts.map((block, index) => (
                     <ItineraryCallout key={index} block={block} />
                 ))}
             </div>

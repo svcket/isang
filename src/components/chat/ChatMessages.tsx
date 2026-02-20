@@ -25,10 +25,30 @@ function ChatBubble({ message }: { message: ChatMessageType }) {
         isGuest,
         messages,
         processAssistantData,
-        incrementTurn
+        incrementTurn,
+        filterState,
+        setActiveFilterPanel,
     } = useAppStore();
 
     const handleAction = async (actionId: string, payload: any, label: string = "Perform action") => {
+        // Intercept UI-only actions
+        if (actionId === "focus_filter") {
+            const panel = payload?.filterParams as "destination" | "dates" | "travelers" | "budget" | null;
+            if (panel) setActiveFilterPanel(panel);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+        if (actionId === "open_when_filter") {
+            setActiveFilterPanel("dates");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+        if (actionId === "focus_destination") {
+            setActiveFilterPanel("destination");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+
         // Prevent duplicate submissions if loading
         if (useAppStore.getState().isLoading) return;
 
@@ -48,7 +68,8 @@ function ChatBubble({ message }: { message: ChatMessageType }) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     message: label,
-                    action_id: actionId, // Pass action_id to help routing
+                    action_id: actionId,
+                    action_payload: payload,
                     history: messages.map((m) => ({
                         role: m.role,
                         content: m.content,
@@ -56,6 +77,7 @@ function ChatBubble({ message }: { message: ChatMessageType }) {
                     tripSnapshot,
                     turnCount,
                     isGuest,
+                    filters: filterState,
                 }),
             });
 

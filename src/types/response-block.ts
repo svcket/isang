@@ -1,4 +1,4 @@
-export type ResponseType = 'TRIP_PLAN' | 'DESTINATION_INFO' | 'TRIP_EDIT' | 'ITINERARY' | 'GENERAL_ASSIST' | 'GREETING';
+export type ResponseType = 'TRIP_PLAN' | 'DESTINATION_INFO' | 'TRIP_EDIT' | 'ITINERARY' | 'BUDGET_ONLY' | 'GENERAL_ASSIST' | 'GREETING';
 
 export interface ResponseBlock {
     type: ResponseType;
@@ -23,11 +23,49 @@ export interface ResponseBlock {
     actions: Action[]; // Primary + Secondary CTAs
     followups?: string[]; // Max 1 question if strictly necessary
     closing?: string; // Optional closing remark or prompt
+    blocks?: DestinationBlock[]; // For DESTINATION_INFO
+
+    // Added for refined DESTINATION_INFO behavior
+    ui_hints?: {
+        show_filter_nudge: boolean;
+        filter_nudge_text?: string;
+        focus_filter?: "budget" | "when" | "travelers" | "destination";
+    };
+    suggestions?: Array<{
+        label: string;
+        action: "send" | "focus_filter";
+        payload?: unknown;
+    }>;
+}
+
+export type DestinationBlock =
+    | { kind: "intro"; text: string }
+    | { kind: "cost_snapshot"; currency: string; tiers: BudgetTier[]; typicals: TypicalCost[]; actions: Action[] }
+    | { kind: "highlights"; items: HighlightItem[] }
+    | { kind: "cta_group"; primary: Action; secondary?: Action };
+
+export interface BudgetTier {
+    label: string; // "Budget", "Mid", "Comfort"
+    range: string; // "€50-80"
+    note: string;  // "Hostel + transit"
+}
+
+export interface TypicalCost {
+    label: string; // "Coffee", "Meal", "Transit"
+    value: string; // "€3.50", "€15", "€2.40"
+}
+
+export interface HighlightItem {
+    id: string;
+    title: string;
+    description: string;
+    photo_urls: string[];
+    actions: Action[]; // "+ Add to trip", "♡"
 }
 
 export interface Section {
     id: string;
-    type: 'FLIGHT' | 'LODGING' | 'FOOD' | 'ACTIVITY' | 'HIGHLIGHT' | 'GENERIC';
+    type: 'FLIGHT' | 'LODGING' | 'FOOD' | 'ACTIVITY' | 'HIGHLIGHT' | 'DESTINATION' | 'GENERIC';
     title: string;
     items: Item[];
     sources?: string[]; // e.g. ["Booking.com", "Reddit"]

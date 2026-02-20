@@ -76,6 +76,8 @@ export default function Home() {
                           message: "Generate an itinerary for my trip",
                           turnCount: store.turnCount,
                           isGuest: store.isGuest,
+                          tripSnapshot: store.tripSnapshot,
+                          filters: store.filterState,
                         }),
                       })
                         .then((r) => r.json())

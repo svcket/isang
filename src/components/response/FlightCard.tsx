@@ -1,5 +1,5 @@
 import type { Item } from "@/types";
-import { MoveRight, Plus, Plane } from "lucide-react";
+import { Plus, Plane } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -59,19 +59,20 @@ export default function FlightCard({
         <div className={cn("relative flex-shrink-0 w-full flex flex-col rounded-[20px] border border-neutral-200 bg-white hover:border-neutral-300 transition-all group", className)}>
             {/* Header: Logo and Airline Name */}
             <div className="flex flex-col items-start gap-2 px-5 py-4 border-b border-neutral-100">
-                <div className="relative w-[30px] h-[30px] flex-shrink-0 rounded-full border border-neutral-100 p-1 bg-white">
+                <div className="relative w-[30px] h-[30px] flex-shrink-0 rounded-sm border border-neutral-100 overflow-hidden bg-white">
                     {_image ? (
                         <Image
                             src={_image}
                             alt={_title}
                             fill
-                            className="object-contain p-1"
+                            unoptimized
+                            className="object-cover"
                         />
                     ) : (
-                        <div className="w-full h-full bg-neutral-100 rounded-full" />
+                        <div className="w-full h-full bg-neutral-100 rounded-sm" />
                     )}
                 </div>
-                <span className="font-normal text-slate-600 text-[13px] tracking-tight ml-0.5">
+                <span className="font-normal text-slate-600 text-[14px] tracking-tight ml-0.5">
                     {_title}
                 </span>
             </div>
@@ -79,22 +80,22 @@ export default function FlightCard({
             {/* Content Container */}
             <div className="px-5 pt-4 pb-5 flex flex-col">
                 {/* Route Visual */}
-                <div className="relative h-[100px] w-full">
+                <div className="relative h-[110px] w-full">
                     {/* Top Left: Origin */}
                     <div className="absolute top-0 left-0">
-                        <span className="text-[17px] font-medium text-neutral-900 tracking-tight">{_origin}</span>
+                        <span className="text-[15px] font-medium text-neutral-900 tracking-tight">{_origin}</span>
                     </div>
 
                     {/* Center: Orange Icon */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                        <div className="w-5 h-5 bg-[#FF4405] rounded-[4px] flex items-center justify-center shadow-sm">
-                            <MoveRight className="w-3 h-3 text-white rotate-[226deg]" strokeWidth={3} />
+                        <div className="w-8 h-8 bg-[#FF4405] rounded-[10px] flex items-center justify-center shadow-sm">
+                            <Plane className="w-[16px] h-[16px] text-white rotate-90" strokeWidth={2} fill="white" />
                         </div>
                     </div>
 
                     {/* Bottom Right: Destination */}
-                    <div className="absolute bottom-1 right-0">
-                        <span className="text-[17px] font-medium text-neutral-900 tracking-tight">{_destination}</span>
+                    <div className="absolute bottom-0 right-0">
+                        <span className="text-[15px] font-medium text-neutral-900 tracking-tight">{_destination}</span>
                     </div>
                 </div>
 
@@ -111,7 +112,7 @@ export default function FlightCard({
                         )}
                     </div>
                     {_tripDetails && (
-                        <div className="text-[15px] text-slate-500 font-normal mt-0.5">
+                        <div className="text-[14px] text-slate-500 font-normal mt-0.5">
                             {_tripDetails}
                         </div>
                     )}
