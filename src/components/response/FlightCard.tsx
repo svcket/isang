@@ -1,7 +1,9 @@
 import type { Item } from "@/types";
-import { Plus, Plane } from "lucide-react";
+import { Plane } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { usePanelStore } from "@/lib/panel-store";
+import type { EntityType } from "@/types/panel";
 
 interface FlightCardProps {
     // Legacy
@@ -23,7 +25,7 @@ interface FlightCardProps {
 
 export default function FlightCard({
     item,
-    onAdd,
+    onAdd: _onAdd,
     id,
     airlineName,
     fromCity,
@@ -55,8 +57,21 @@ export default function FlightCard({
 
     const _image = logoSrc || item?.image_url;
 
+    const openPanel = usePanelStore((s) => s.openPanel);
+
+    const handleCardClick = () => {
+        openPanel({
+            entity_type: (item?.entity_type as EntityType) || "FLIGHT",
+            entity_id: item?.entity_id || _id,
+            title: _title,
+        });
+    };
+
     return (
-        <div className={cn("relative flex-shrink-0 w-full flex flex-col rounded-[20px] border border-neutral-200 bg-white hover:border-neutral-300 transition-all group", className)}>
+        <div
+            className={cn("relative flex-shrink-0 w-full flex flex-col rounded-[20px] border border-neutral-200 bg-white hover:border-neutral-300 transition-all group cursor-pointer", className)}
+            onClick={handleCardClick}
+        >
             {/* Header: Logo and Airline Name */}
             <div className="flex flex-col items-start gap-2 px-5 py-4 border-b border-neutral-100">
                 <div className="relative w-[30px] h-[30px] flex-shrink-0 rounded-sm border border-neutral-100 overflow-hidden bg-white">

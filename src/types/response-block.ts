@@ -61,6 +61,8 @@ export interface HighlightItem {
     description: string;
     photo_urls: string[];
     actions: Action[]; // "+ Add to trip", "♡"
+    entity_type?: string; // Panel entity type
+    entity_id?: string;   // Panel entity ID
 }
 
 export interface Section {
@@ -84,6 +86,8 @@ export interface Item {
     rating?: string;
     deep_link?: string;
     coordinates?: { lat: number; lng: number };
+    entity_type?: string; // Panel entity type
+    entity_id?: string;   // Panel entity ID
 }
 
 export interface Action {

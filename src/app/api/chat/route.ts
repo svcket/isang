@@ -517,9 +517,10 @@ export function generateMockResponse(
 
     // ─── 2b. BUDGET_ONLY (Pattern D — budget with no destination) ────────
     if (budget && !detectedDest) {
-        // Check that no destination was set via another route
+        // Check that no destination was set via filters or message text
         const filterDest = filters?.destination;
-        if (!filterDest) {
+        const textHasDest = lower.match(/(?:trip|headed|going) to (.+?)(?:\s+starting|\s+for|\s+with|$)/i);
+        if (!filterDest && !textHasDest) {
             return generateBudgetOnlyResponse(budget, filters);
         }
     }
@@ -1087,7 +1088,7 @@ function generateBudgetOnlyResponse(budgetStr: string, filters?: any) {
                     {
                         label: "Set dates to refine",
                         action_id: "open_when_filter",
-                        style: "PRIMARY" as const,
+                        style: "SECONDARY" as const,
                     },
                     {
                         label: "Add origin",

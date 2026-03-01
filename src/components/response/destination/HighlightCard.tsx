@@ -1,9 +1,11 @@
-import { HighlightItem } from "@/types";
+import type { HighlightItem } from "@/types";
 import PhotoStrip from "./PhotoStrip";
 import { Button } from "@/components/ui/button";
 import { Heart, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/lib/store";
+import { usePanelStore } from "@/lib/panel-store";
+import type { EntityType } from "@/types/panel";
 
 interface HighlightCardProps {
     item: HighlightItem;
@@ -24,8 +26,21 @@ export default function HighlightCard({ item, isAdded, onToggleAdd }: HighlightC
         action();
     };
 
+    const openPanel = usePanelStore((s) => s.openPanel);
+
+    const handleCardClick = () => {
+        openPanel({
+            entity_type: (item.entity_type as EntityType) || "PLACE",
+            entity_id: item.entity_id || item.id,
+            title: item.title.replace(/:$/, ""), // strip trailing colon
+        });
+    };
+
     return (
-        <div className="bg-white rounded-2xl p-0 space-y-3 pb-2">
+        <div
+            className="bg-white rounded-2xl p-0 space-y-3 pb-2 cursor-pointer"
+            onClick={handleCardClick}
+        >
             {/* Header: Title */}
             <div>
                 <h3 className="text-[17px] font-bold text-neutral-900 leading-tight">

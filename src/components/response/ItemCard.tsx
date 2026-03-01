@@ -1,6 +1,7 @@
 import type { Item } from "@/types";
-import { Plus } from "lucide-react";
 import Image from "next/image";
+import { usePanelStore } from "@/lib/panel-store";
+import type { EntityType } from "@/types/panel";
 
 interface ItemCardProps {
     item: Item;
@@ -8,9 +9,22 @@ interface ItemCardProps {
     className?: string;
 }
 
-export default function ItemCard({ item, onAdd, className }: ItemCardProps) {
+export default function ItemCard({ item, onAdd: _onAdd, className }: ItemCardProps) {
+    const openPanel = usePanelStore((s) => s.openPanel);
+
+    const handleClick = () => {
+        openPanel({
+            entity_type: (item.entity_type as EntityType) || "PLACE",
+            entity_id: item.entity_id || item.id,
+            title: item.title,
+        });
+    };
+
     return (
-        <div className={`relative flex-shrink-0 w-full sm:w-full group cursor-pointer ${className}`}>
+        <div
+            className={`relative flex-shrink-0 w-full sm:w-full group cursor-pointer ${className}`}
+            onClick={handleClick}
+        >
             {/* Image Container */}
             <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-muted mb-2.5">
                 <Image

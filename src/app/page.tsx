@@ -9,6 +9,7 @@ import SuggestionsGrid from "@/components/suggestions/SuggestionsGrid";
 import SuggestionDetail from "@/components/suggestions/SuggestionDetail";
 import ItineraryView from "@/components/itinerary/ItineraryView";
 import AuthModal from "@/components/auth/AuthModal";
+import DetailPanel from "@/components/panels/DetailPanel";
 import { Button } from "@/components/ui/button";
 import { CalendarPlus, MessageCircle } from "lucide-react";
 
@@ -209,6 +210,7 @@ export default function Home() {
       )}
 
       <AuthModal />
+      <DetailPanel />
     </div>
   );
 }
