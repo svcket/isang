@@ -76,10 +76,7 @@ export default function SuggestionDetail() {
                                         l.toUpperCase()
                                     )}
                                 </Badge>
-                                <h2
-                                    className="text-xl font-bold text-white"
-                                    style={{ fontFamily: "var(--font-heading)" }}
-                                >
+                                <h2 className="font-heading text-xl font-bold text-white">
                                     {item.name}
                                 </h2>
                             </div>

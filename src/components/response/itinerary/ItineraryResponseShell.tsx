@@ -1,6 +1,6 @@
 
 import React from "react";
-import { ItineraryDay, Action } from "@/types/response-block";
+import type { ItineraryDay, Action } from "@/types/response-block";
 import ItineraryDayCard from "./ItineraryDayCard";
 import ItineraryFooterActions from "./ItineraryFooterActions";
 
@@ -12,7 +12,7 @@ interface ItineraryResponseShellProps {
     onAction?: (actionId: string, payload?: unknown, label?: string) => void;
 }
 
-export default function ItineraryResponseShell({ days, actions, onAction }: ItineraryResponseShellProps) {
+export default function ItineraryResponseShell({ days, actions: _actions, onAction }: ItineraryResponseShellProps) {
     const isGuest = useAppStore((s) => s.isGuest);
     const setShowAuthModal = useAppStore((s) => s.setShowAuthModal);
 

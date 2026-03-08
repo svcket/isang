@@ -51,6 +51,7 @@ export function useHydrateFilters() {
                 });
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Only run on mount to hydrate
 
     // 2. Sync Store to URL on Change

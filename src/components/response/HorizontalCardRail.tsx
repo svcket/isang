@@ -18,7 +18,6 @@ export default function HorizontalCardRail({ items, onItemAdd, children }: Horiz
                 <div
                     ref={scrollContainerRef}
                     className="flex gap-3 overflow-x-auto px-4 sm:px-0 pb-4 pt-1 snap-x scrollbar-hide"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {children}
                     {/* Padding kicker for end of list */}
@@ -37,7 +36,6 @@ export default function HorizontalCardRail({ items, onItemAdd, children }: Horiz
             <div
                 ref={scrollContainerRef}
                 className="flex gap-3 overflow-x-auto px-4 sm:px-0 pb-4 pt-1 snap-x scrollbar-hide"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {items.map((item) => (
                     <ItemCard

@@ -6,6 +6,13 @@ import type {
 import { generateSection } from "@/lib/utils";
 import type { AssistantResponse } from "@/types";
 
+export interface ChatFilters {
+    destination?: string;
+    dates?: { start?: string; end?: string };
+    budget?: { amount?: number; currency?: string };
+    travelers?: { adults?: number; children?: number };
+}
+
 // 1. TRIP_PLAN: Dest + (Dates OR Duration OR Budget)
 // 2. DESTINATION_INFO: Dest only
 // 3. TRIP_EDIT: Context + Refinement keywords (simplified for MVP)
@@ -165,7 +172,8 @@ export function generateMockResponse(
     turnCount: number,
     snapshot?: AssistantResponse['tripSnapshot'],
     action_id?: string,
-    filters?: any,
+    filters?: ChatFilters,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     action_payload?: any
 ): { reply: string; data?: AssistantResponse } {
     const lower = message.toLowerCase();
@@ -266,21 +274,53 @@ export function generateMockResponse(
                                     title: hotel1,
                                     image_url: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=450&fit=crop",
                                     meta: ["4.9 ★", "City Center", "Luxury"],
-                                    price_chip: `From ${currencySymbol}850 / night`
+                                    price_chip: `From ${currencySymbol}850 / night`,
+                                    entity_type: "HOTEL",
+                                    entity_id: "h1"
                                 },
                                 {
                                     id: "h2",
                                     title: hotel2,
                                     image_url: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&h=450&fit=crop",
                                     meta: ["5.0 ★", "City Center", "Infinity pool"],
-                                    price_chip: `From ${currencySymbol}1,200 / night`
+                                    price_chip: `From ${currencySymbol}1,200 / night`,
+                                    entity_type: "HOTEL",
+                                    entity_id: "h2"
                                 },
                                 {
                                     id: "h3",
                                     title: hotel3,
                                     image_url: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&h=450&fit=crop",
                                     meta: ["4.8 ★", "Downtown", "Modern"],
-                                    price_chip: `From ${currencySymbol}950 / night`
+                                    price_chip: `From ${currencySymbol}950 / night`,
+                                    entity_type: "HOTEL",
+                                    entity_id: "h3"
+                                }
+                            ]
+                        },
+                        {
+                            id: "food-1",
+                            type: "FOOD" as const,
+                            title: "Restaurants",
+                            sources: ["Michelin Guide", "Eater", "Local Blogs"],
+                            items: [
+                                {
+                                    id: "r1",
+                                    title: `${destination.split(",")[0] || "City"} Fine Dining`,
+                                    image_url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=450&fit=crop",
+                                    meta: ["4.8 ★", "Local Cuisine", "$$"],
+                                    price_chip: "Reserve",
+                                    entity_type: "RESTAURANT",
+                                    entity_id: "r1"
+                                },
+                                {
+                                    id: "r2",
+                                    title: "Ocean View Bistro",
+                                    image_url: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=450&fit=crop",
+                                    meta: ["4.6 ★", "Seafood", "$$$"],
+                                    price_chip: "Reserve",
+                                    entity_type: "RESTAURANT",
+                                    entity_id: "r2"
                                 }
                             ]
                         },
@@ -295,21 +335,27 @@ export function generateMockResponse(
                                     title: activity1,
                                     image_url: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&h=450&fit=crop",
                                     meta: [],
-                                    price_chip: "Free"
+                                    price_chip: "Free",
+                                    entity_type: "ACTIVITY",
+                                    entity_id: "a1"
                                 },
                                 {
                                     id: "a2",
                                     title: activity2,
                                     image_url: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=600&h=450&fit=crop",
                                     meta: [],
-                                    price_chip: "Free"
+                                    price_chip: "Free",
+                                    entity_type: "ACTIVITY",
+                                    entity_id: "a2"
                                 },
                                 {
                                     id: "a3",
                                     title: activity3,
                                     image_url: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=450&fit=crop",
                                     meta: [],
-                                    price_chip: `From ${currencySymbol}80`
+                                    price_chip: `From ${currencySymbol}80`,
+                                    entity_type: "ACTIVITY",
+                                    entity_id: "a3"
                                 }
                             ]
                         },
@@ -373,7 +419,7 @@ export function generateMockResponse(
         const startDay = rangeMatch[2]!.replace(/(st|nd|rd|th)/, '');
 
         let endMonth = startMonth;
-        let endDay = rangeMatch[4]!.replace(/(st|nd|rd|th)/, '');
+        const endDay = rangeMatch[4]!.replace(/(st|nd|rd|th)/, '');
 
         // If second month is present (Group 3)
         if (rangeMatch[3]) {
@@ -549,7 +595,7 @@ export function generateMockResponse(
             targetDest = conversationalMatch[1].replace(/\b\w/g, (l) => l.toUpperCase());
         } else if (message.length < 50 && !lower.includes("help") && !lower.includes("hello")) {
             // Assume the whole message might be a place name if it's short, strip some very common simple prefixes
-            let cleaned = message.replace(/^(how about|what about|go to|visit)\s+/i, '');
+            const cleaned = message.replace(/^(how about|what about|go to|visit)\s+/i, '');
             targetDest = cleaned.replace(/\b\w/g, (l) => l.toUpperCase());
         }
     }
@@ -567,7 +613,7 @@ export function generateMockResponse(
         const durationStr = durationMatch ? `${durationMatch[1]} days` : (hasDuration ? "5 days" : undefined);
         const budgetStr = filters?.budget?.amount ? `${filters.budget.currency === "USD" ? "$" : "₦"}${filters.budget.amount}` : budget;
         const dateStr = filters?.dates?.start ? (filters.dates.end ? `${filters.dates.start} - ${filters.dates.end}` : filters.dates.start) : (dateInfo || undefined);
-        const travelersStr = (filters?.travelers && (filters.travelers.adults !== 1 || filters.travelers.children > 0)) ? formatTravelers(filters.travelers.adults, filters.travelers.children) : travelers;
+        const travelersStr = (filters?.travelers && (filters.travelers.adults !== 1 || (filters.travelers.children ?? 0) > 0)) ? formatTravelers(filters.travelers.adults ?? 1, filters.travelers.children ?? 0) : travelers;
 
         // Classify Intent
         // TRIP_PLAN requires explicit intent keywords OR specific details (dates/duration/budget)
@@ -605,8 +651,6 @@ export function generateMockResponse(
             );
         } else {
             // DESTINATION_INFO logic (Highlights Feed)
-            const currency = targetCurrency;
-
             // Construct Blocks
             const blocks: DestinationBlock[] = [];
 
@@ -1512,7 +1556,7 @@ function buildItinerary(pool: Array<{
     beats: { title: string; content: string }[];
     tip: { label: string; text: string };
     spend: { amount: string; note: string };
-}>, days: number, currency: string) {
+}>, days: number, _currency: string) {
     const result = [];
     for (let i = 0; i < days; i++) {
         const dayNum = i + 1;

@@ -76,6 +76,49 @@ function destinationPayload(name: string): PanelPayload {
                     },
                 ],
             },
+            {
+                id: "stays",
+                title: "Stays",
+                blocks: [
+                    {
+                        type: "rail",
+                        title: "Popular Hotels",
+                        items: [
+                            { id: "s1", title: "Costa Luz Boutique", image_url: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=300&fit=crop", meta: ["4.9 ★", "City Center"], price_chip: "$240/night", entity_type: "HOTEL", entity_id: "costa-luz" },
+                            { id: "s2", title: "The Grand Resort", image_url: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop", meta: ["4.8 ★", "Beachfront"], price_chip: "$450/night", entity_type: "HOTEL", entity_id: "grand-resort" },
+                            { id: "s3", title: "Urban Loft Suites", image_url: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop", meta: ["4.6 ★", "Downtown"], price_chip: "$180/night", entity_type: "HOTEL", entity_id: "urban-loft" },
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "restaurants",
+                title: "Restaurants",
+                blocks: [
+                    {
+                        type: "rail",
+                        title: "Top Rated Dining",
+                        items: [
+                            { id: "r1", title: "Bistro 44", image_url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop", meta: ["4.7 ★", "French", "$$"], entity_type: "RESTAURANT", entity_id: "bistro-44" },
+                            { id: "r2", title: "Sakura Sushi", image_url: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&h=300&fit=crop", meta: ["4.9 ★", "Japanese", "$$$"], entity_type: "RESTAURANT", entity_id: "sakura-sushi" },
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "things-to-do",
+                title: "Things To Do",
+                blocks: [
+                    {
+                        type: "rail",
+                        title: "Must-See Attractions",
+                        items: [
+                            { id: "a1", title: "National Museum", image_url: "https://images.unsplash.com/photo-1518998053401-878939634e9e?w=400&h=300&fit=crop", meta: ["History", "Indoor"], price_chip: "$15", entity_type: "ACTIVITY", entity_id: "national-museum" },
+                            { id: "a2", title: "City Tour Bus", image_url: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=300&fit=crop", meta: ["2 Hours", "Outdoor"], price_chip: "$30", entity_type: "ACTIVITY", entity_id: "city-tour" },
+                        ]
+                    }
+                ]
+            }
         ],
         actions: [
             { id: "save", label: "Save", variant: "secondary", icon: "heart", action: "TOGGLE_SAVE" },

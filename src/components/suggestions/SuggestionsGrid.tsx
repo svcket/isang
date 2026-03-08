@@ -64,8 +64,7 @@ function SuggestionCard({ item }: { item: SuggestionItem }) {
             </div>
 
             <CardContent className="p-4">
-                <h3 className="font-semibold text-sm text-foreground line-clamp-1 mb-1"
-                    style={{ fontFamily: "var(--font-heading)" }}>
+                <h3 className="font-heading font-semibold text-sm text-foreground line-clamp-1 mb-1">
                     {item.name}
                 </h3>
                 <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
@@ -107,10 +106,7 @@ export default function SuggestionsGrid() {
                                 return (
                                     <>
                                         <Icon className={`h-5 w-5 ${config.color}`} />
-                                        <h2
-                                            className="text-lg font-semibold text-foreground"
-                                            style={{ fontFamily: "var(--font-heading)" }}
-                                        >
+                                        <h2 className="font-heading text-lg font-semibold text-foreground">
                                             {section.title}
                                         </h2>
                                     </>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import Image from "next/image";
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,9 +67,9 @@ export function DestinationPanel({ onClose }: DestinationPanelProps) {
                                 onClick={() => handleSelect(dest.name)}
                                 className="flex items-center gap-3 w-full p-2 hover:bg-muted/50 rounded-lg text-left transition-colors"
                             >
-                                <div className="h-10 w-10 shrink-0 bg-muted rounded-md overflow-hidden flex items-center justify-center">
+                                <div className="relative h-10 w-10 shrink-0 bg-muted rounded-md overflow-hidden flex items-center justify-center">
                                     {dest.image ? (
-                                        <img src={dest.image} alt={dest.name} className="h-full w-full object-cover" />
+                                        <Image src={dest.image} alt={dest.name} fill unoptimized className="object-cover" sizes="40px" />
                                     ) : (
                                         <MapPin className="h-5 w-5 text-muted-foreground" />
                                     )}

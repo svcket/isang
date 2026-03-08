@@ -13,7 +13,7 @@ interface SidePanelShellProps {
 export default function SidePanelShell({
     open,
     onClose,
-    width = "w-full sm:w-[480px]",
+    width = "w-full sm:w-[600px] md:w-[720px] lg:w-[840px]",
     children,
 }: SidePanelShellProps) {
     const panelRef = useRef<HTMLDivElement>(null);
@@ -51,7 +51,7 @@ export default function SidePanelShell({
         <>
             {/* Backdrop */}
             <div
-                className="fixed inset-0 z-40 bg-black/30 transition-opacity duration-300"
+                className="fixed inset-0 z-[100] bg-black/30 transition-opacity duration-300"
                 onClick={onClose}
                 aria-hidden="true"
             />
@@ -63,7 +63,7 @@ export default function SidePanelShell({
                 role="dialog"
                 aria-modal="true"
                 className={cn(
-                    "fixed inset-y-0 right-0 z-50 flex flex-col bg-white shadow-2xl",
+                    "fixed inset-y-0 right-0 z-[101] flex flex-col bg-white shadow-2xl",
                     "transform transition-transform duration-300 ease-out",
                     "outline-none overflow-hidden",
                     width,

@@ -1,5 +1,4 @@
 import * as React from "react"
-import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +10,7 @@ interface FilterPillProps {
     onClick: () => void;
 }
 
-export function FilterPill({ id, label, isActive, hasValue, onClick }: FilterPillProps) {
+export function FilterPill({ id: _id, label, isActive, hasValue, onClick }: FilterPillProps) {
     return (
         <Button
             variant="ghost"

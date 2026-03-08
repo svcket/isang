@@ -10,7 +10,8 @@ import DestinationInfoResponse from "./destination/DestinationInfoResponse";
 import DestinationSuggestionCard from "./sections/DestinationSuggestionCard";
 
 // Helper to map generic Item to FlightItem
-function mapToFlightItems(items: any[]): FlightItem[] {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapToFlightItems(items: Record<string, any>[]): FlightItem[] {
     return items.map(item => ({
         id: item.id,
         airlineName: item.title,

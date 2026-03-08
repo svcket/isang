@@ -1,4 +1,4 @@
-import { BudgetTier, TypicalCost, Action } from "@/types";
+import type { BudgetTier, TypicalCost, Action } from "@/types";
 import { Coins, Coffee, Ticket, Utensils } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

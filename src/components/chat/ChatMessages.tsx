@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { useRef, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import type { ChatMessage as ChatMessageType } from "@/types";
@@ -8,7 +10,6 @@ import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
     Plane,
-    Sparkles,
 } from "lucide-react";
 
 import ResponseShell from "../response/ResponseShell";
@@ -30,10 +31,11 @@ function ChatBubble({ message }: { message: ChatMessageType }) {
         setActiveFilterPanel,
     } = useAppStore();
 
-    const handleAction = async (actionId: string, payload: any, label: string = "Perform action") => {
+    const handleAction = async (actionId: string, payload?: unknown, label: string = "Perform action") => {
         // Intercept UI-only actions
         if (actionId === "focus_filter") {
-            const panel = payload?.filterParams as "destination" | "dates" | "travelers" | "budget" | null;
+            const parsed = payload as { filterParams?: string } | undefined;
+            const panel = parsed?.filterParams as "destination" | "dates" | "travelers" | "budget" | null;
             if (panel) setActiveFilterPanel(panel);
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
@@ -149,7 +151,7 @@ function ChatBubble({ message }: { message: ChatMessageType }) {
     return (
         <div className="message-enter flex gap-3 flex-row w-full max-w-[790px] mx-auto">
             <Avatar className="h-8 w-8 shrink-0 flex items-center justify-center rounded-lg bg-transparent mt-1 overflow-hidden">
-                <img src="/onboarding/isang-response-avatar.png" alt="Isang" className="h-full w-full object-contain" />
+                <Image src="/onboarding/isang-response-avatar.png" width={32} height={32} alt="Isang" className="h-full w-full object-contain" />
             </Avatar>
             <div className="flex flex-col gap-1 items-start max-w-[80%]">
                 <div className="bg-white border border-neutral-100 px-5 py-3 rounded-[20px] rounded-tl-sm text-[15px] leading-relaxed shadow-sm text-neutral-900">
@@ -164,7 +166,7 @@ function TypingIndicator() {
     return (
         <div className="message-enter flex gap-3 items-start w-full max-w-[790px] mx-auto">
             <Avatar className="h-8 w-8 shrink-0 flex items-center justify-center rounded-lg bg-transparent mt-1 overflow-hidden">
-                <img src="/onboarding/isang-response-avatar.png" alt="Isang" className="h-full w-full object-contain" />
+                <Image src="/onboarding/isang-response-avatar.png" width={32} height={32} alt="Isang" className="h-full w-full object-contain" />
             </Avatar>
             <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
                 <div className="flex gap-1.5 items-center">
@@ -197,10 +199,7 @@ export default function ChatMessages() {
                             <Plane className="h-8 w-8 text-white" />
                         </div>
                         <div>
-                            <h2
-                                className="text-xl font-semibold text-foreground"
-                                style={{ fontFamily: "var(--font-heading)" }}
-                            >
+                            <h2 className="font-heading text-xl font-semibold text-foreground">
                                 Where to next?
                             </h2>
                             <p className="text-sm text-muted-foreground mt-1 max-w-sm">

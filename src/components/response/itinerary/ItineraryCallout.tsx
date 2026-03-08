@@ -1,7 +1,6 @@
 
 import React from "react";
-import { cn } from "@/lib/utils";
-import { ItineraryBlock } from "@/types/response-block";
+import type { ItineraryBlock } from "@/types/response-block";
 
 interface ItineraryCalloutProps {
     block: ItineraryBlock;

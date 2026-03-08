@@ -49,7 +49,7 @@ export function DateRangePicker({
                         month: "space-y-6 text-center select-none",
                         month_caption: "flex justify-center pt-1 relative items-center mb-4",
                         caption_label: "text-lg font-medium text-neutral-800",
-                        nav: "absolute inset-x-0 top-0 flex items-center justify-between px-2 z-20",
+                        nav: "absolute inset-x-0 top-0 flex items-center justify-between px-2 z-10",
                         button_previous: "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 cursor-pointer inline-flex items-center justify-center rounded-md border border-neutral-200 hover:bg-neutral-50 transition-colors",
                         button_next: "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 cursor-pointer inline-flex items-center justify-center rounded-md border border-neutral-200 hover:bg-neutral-50 transition-colors",
                         month_grid: "w-full border-collapse space-y-1 mx-auto",

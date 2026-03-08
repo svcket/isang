@@ -1,6 +1,5 @@
 import type { ResponseBlock } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 
 interface TripSummaryHeaderProps {
     meta: NonNullable<ResponseBlock['trip_meta']>;

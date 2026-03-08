@@ -1,9 +1,10 @@
 "use client";
 
 import { useAppStore } from "@/lib/store";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { MessageCircle, LayoutGrid, CalendarDays, RotateCcw } from "lucide-react";
+import { MessageCircle, RotateCcw } from "lucide-react";
 import { FiltersBar } from "@/components/filters/FiltersBar";
 import { useHydrateFilters } from "@/hooks/useHydrateFilters";
 
@@ -13,14 +14,13 @@ export default function AppHeader() {
 
     const activeView = useAppStore((s) => s.activeView);
     const setActiveView = useAppStore((s) => s.setActiveView);
-    const suggestions = useAppStore((s) => s.suggestions);
     const itinerary = useAppStore((s) => s.itinerary);
     const isGuest = useAppStore((s) => s.isGuest);
     const setShowAuthModal = useAppStore((s) => s.setShowAuthModal);
     const reset = useAppStore((s) => s.reset);
     const messages = useAppStore((s) => s.messages);
 
-    const hasSuggestions = suggestions.length > 0;
+    // Removed hasSuggestions, not used
     const hasItinerary = !!itinerary;
     const isLanding = messages.length === 0;
 
@@ -33,9 +33,12 @@ export default function AppHeader() {
                     <div className="flex items-center gap-2.5 shrink-0 z-10">
                         <Link href="/" onClick={reset} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
                             <div className="flex items-center justify-center">
-                                <img
+                                <Image
                                     src="/onboarding/isang-response-avatar.png"
                                     alt="Isang"
+                                    width={32}
+                                    height={32}
+                                    unoptimized
                                     className="h-8 w-auto object-contain"
                                 />
                             </div>

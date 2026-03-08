@@ -58,13 +58,13 @@ function TimeBlockCard({
                     )}
                     {!isBlurred && (
                         <div className="flex gap-1 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button className="p-1 rounded hover:bg-muted">
+                            <button className="p-1 rounded hover:bg-muted" title="Edit block" aria-label="Edit block">
                                 <Edit3 className="h-3 w-3 text-muted-foreground" />
                             </button>
-                            <button className="p-1 rounded hover:bg-muted">
+                            <button className="p-1 rounded hover:bg-muted" title="Refresh block" aria-label="Refresh block">
                                 <RefreshCw className="h-3 w-3 text-muted-foreground" />
                             </button>
-                            <button className="p-1 rounded hover:bg-destructive/10">
+                            <button className="p-1 rounded hover:bg-destructive/10" title="Delete block" aria-label="Delete block">
                                 <Trash2 className="h-3 w-3 text-destructive" />
                             </button>
                         </div>
@@ -97,10 +97,7 @@ function DaySection({
                         {day.dayNumber}
                     </div>
                     <div className="text-left">
-                        <h3
-                            className="text-sm font-semibold text-foreground"
-                            style={{ fontFamily: "var(--font-heading)" }}
-                        >
+                        <h3 className="font-heading text-sm font-semibold text-foreground">
                             {day.title}
                         </h3>
                         {day.date && (
@@ -146,10 +143,7 @@ export default function ItineraryView() {
                 {/* Itinerary Header */}
                 <div className="flex items-center justify-between mb-4">
                     <div>
-                        <h2
-                            className="text-xl font-bold text-foreground"
-                            style={{ fontFamily: "var(--font-heading)" }}
-                        >
+                        <h2 className="font-heading text-xl font-bold text-foreground">
                             Your Itinerary
                         </h2>
                         <p className="text-sm text-muted-foreground">

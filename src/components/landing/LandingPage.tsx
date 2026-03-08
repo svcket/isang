@@ -5,7 +5,6 @@ import { useAppStore } from "@/lib/store";
 import type { ChatMessage, AssistantResponse } from "@/types";
 import { Paperclip, Mic, ArrowUp, Image as ImageIcon, FileText } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
 import { DateRangePicker } from "@/components/ui/DateRangePicker";
 import { DestinationInput } from "./DestinationInput";
 import {
@@ -159,7 +158,7 @@ export default function LandingPage() {
 
     /* ── Common logic to send message ───────────────────────────────── */
     // Defined BEFORE usage in handlers to avoid hoisting issues with const/let
-    const processMessage = async (content: string) => {
+    const processMessage = useCallback(async (content: string) => {
         setLoading(true);
         const userMessage: ChatMessage = {
             id: generateId(),
@@ -219,7 +218,8 @@ export default function LandingPage() {
         } finally {
             setLoading(false);
         }
-    };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addMessage, isGuest, incrementTurn, processAssistantData, tripSnapshot, turnCount]);
 
     /* ── Mad Libs Handler ───────────────────────────────────────────── */
     const handleMadLibsSubmit = useCallback(async () => {
@@ -255,7 +255,7 @@ export default function LandingPage() {
         const prompt = `I'm headed to ${location} starting ${dateText}, for ${dur} days with a budget of ${rawBudget !== "undecided" ? "$" + rawBudget : "undecided"}`;
 
         await processMessage(prompt);
-    }, [destination, dateRange, duration, budget, isLoading, processMessage, setFilter]);
+    }, [destination, dateRange, duration, budget, processMessage, setFilter]);
 
     /* ── Bottom Input Handler ───────────────────────────────────────── */
     const handleBottomSubmit = useCallback(async () => {
@@ -263,7 +263,7 @@ export default function LandingPage() {
         if (!trimmed || isLoading) return;
         await processMessage(trimmed);
         setBottomValue("");
-    }, [bottomValue, isLoading]);
+    }, [bottomValue, isLoading, processMessage]);
 
     // Determine if "Let's Go" should be active via strict acceptance criteria
     const hasDestination = destination.trim().length > 0;

@@ -1,4 +1,5 @@
-import { DestinationBlock, Action } from "@/types";
+import type { DestinationBlock } from "@/types";
+// import Action removed
 import DestinationIntroBlock from "./DestinationIntroBlock";
 import CostSnapshotBlock from "./CostSnapshotBlock";
 import HighlightCard from "./HighlightCard";
@@ -6,7 +7,8 @@ import SectionCard from "../SectionCard";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import FilterNudgeRow from "./FilterNudgeRow";
-import SuggestionChipsRow, { SuggestionChip } from "./SuggestionChipsRow";
+import type { SuggestionChip } from "./SuggestionChipsRow";
+import SuggestionChipsRow from "./SuggestionChipsRow";
 
 interface DestinationInfoResponseProps {
     blocks: DestinationBlock[];

@@ -1,6 +1,6 @@
 
 import React from "react";
-import { ItineraryDay } from "@/types/response-block";
+import type { ItineraryDay } from "@/types/response-block";
 import ItineraryCallout from "./ItineraryCallout";
 
 interface ItineraryDayCardProps {
