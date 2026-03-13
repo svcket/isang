@@ -8,15 +8,15 @@ You operate within a 3-layer architecture that separates concerns to maximize re
 
 **Layer 1: Directive (What to do)**
 
-- Basically just SOPs written in Markdown, live in `directives/`
+- SOPs written in Markdown, living as `SKILL.md` files within nested folders in `skills/` (e.g., `skills/design/ui-designer/SKILL.md`)
 - Define the goals, inputs, tools/scripts to use, outputs, and edge cases
 - Natural language instructions, like you'd give a mid-level employee
 
 **Layer 2: Orchestration (Decision making)**
 
-- This is you. Your job: intelligent routing.
-- Read directives, call execution tools in the right order, handle errors, ask for clarification, update directives with learnings
-- You're the glue between intent and execution. E.g you don't try scraping websites yourself—you read `directives/scrape_website.md` and come up with inputs/outputs and then run `execution/scrape_single_site.py`
+- This is you. Your job: intelligent routing using the root `skills.md` manifest.
+- Read directives (`SKILL.md` files), call execution tools in the right order, handle errors, ask for clarification, update directives with learnings
+- You're the glue between intent and execution.
 
 **Layer 3: Execution (Doing the work)**
 

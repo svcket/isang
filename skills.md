@@ -1,53 +1,43 @@
-# Agent Skills Index
+# Agent Skills Manifest (v2 - Granular)
 
-This document defines the reusable capabilities (skills) available to this agent for the Isang project.
-
-When a user request comes in, check this index to determine the appropriate skill to route the task to. Each skill is mapped to an SOP (Standard Operating Procedure) in the `directives/` folder and deterministic scripts in the `execution/` folder.
-
-> **Note:** If you need to create a new skill, STOP and read `skill_creator.md` first.
+This manifest defines the location of specialized expert personas within the Isang project. The Orchestration Layer utilizes this index to route tasks to specific, folder-based skills.
 
 ---
 
-## Available Skills
+## 🎨 Design Division
 
-### 1. UI & Design System Architect
+- **UI Designer**: `/Users/socket/isang/skills/design/ui-designer/SKILL.md`
+- **UX Architect**: `/Users/socket/isang/skills/design/ux-architect/SKILL.md`
 
-- **Trigger**: User asks to build, modify, or style UI components (buttons, layouts, cards).
-- **Directive SOP**: `directives/isang_ui_architect.md`
-- **Execution Script**: `execution/verify_tailwind_classes.py`
-- **Responsibilities**: Mobile-responsiveness, pixel-perfect Tailwind, shadcn/ui components, adherence to Isang's design system (SF Pro, FF4405, generic components).
+## 💻 Engineering Division
 
-### 2. AI Response Engine Specialist
+- **Backend & Data Architect**: `/Users/socket/isang/skills/engineering/backend-architect/SKILL.md`
+- **DevOps & Security Automator**: `/Users/socket/isang/skills/engineering/devops-automator/SKILL.md`
+- **Frontend Developer (Orchestrator)**: `/Users/socket/isang/skills/engineering/frontend-developer/SKILL.md`
+- **Mobile App Builder**: `/Users/socket/isang/skills/engineering/mobile-app-builder/SKILL.md`
+- **AI Response Engineer**: `/Users/socket/isang/skills/engineering/ai-response-engineer/SKILL.md`
 
-- **Trigger**: User wants to modify how AI generative blocks are structured, mapped, or displayed (e.g., specific response patterns).
-- **Directive SOP**: `directives/isang_response_engine.md`
-- **Execution Script**: `execution/validate_response_schema.py`
-- **Responsibilities**: AI parsing, structured JSON mappings, fallbacks for missing data.
+## 🧪 Testing & Verification Division
 
-### 3. State & Architecture Orchestrator
+- **Senior QA Specialist**: `/Users/socket/isang/skills/testing/qa-specialist/SKILL.md`
+- **Reality Checker**: `/Users/socket/isang/skills/testing/reality-checker/SKILL.md`
 
-- **Trigger**: Complex state requirements, global state flows across components, or routing interactions.
-- **Directive SOP**: `directives/isang_state_orchestrator.md`
-- **Execution Script**: `execution/test_zustand_store.py`
-- **Responsibilities**: Zustand stores, side-effects, Next.js App Router flows, avoiding prop-drilling or stale closures.
+## 🚀 Marketing & Growth Division
 
-### 4. Verification & QA Specialist
+- **Growth Hacker**: `/Users/socket/isang/skills/marketing/growth-hacker/SKILL.md`
 
-- **Trigger**: Needs to fix type errors, fix lint errors, or maintain testing pipelines.
-- **Directive SOP**: `directives/isang_qa_specialist.md`
-- **Execution Script**: `execution/run_verification_suite.py`
-- **Responsibilities**: TypeScript strictness, ESLint, Vitest unit tests, Playwright E2E.
+## ✨ Specialized Division
 
-### 5. Core Data & API Architect
+- **Behavioral Nudge Engine**: `/Users/socket/isang/skills/specialized/behavioral-nudge-engine/SKILL.md`
+- **Cultural Intelligence Strategist**: `/Users/socket/isang/skills/specialized/cultural-intelligence-strategist/SKILL.md`
 
-- **Trigger**: Building backend API routes, designing database schemas, or writing migrations.
-- **Directive SOP**: `directives/isang_data_architect.md`
-- **Execution Script**: `execution/run_db_migrations.py`
-- **Responsibilities**: Database schemas (Supabase), internal data contracts, server-side APIs in `src/app/api/`.
+---
 
-### 6. DevOps & Security Guardian
-
-- **Trigger**: Dealing with Auth (RLS policies), deployment configurations, or secure environments.
-- **Directive SOP**: `directives/isang_devops_security.md`
-- **Execution Script**: `execution/audit_security_rules.py`
-- **Responsibilities**: Row Level Security, caching strategies (Image Proxy), env var management, overall security posture.
+## 🏗️ Future Expansion (Placeholders)
+- `skills/game-development/`
+- `skills/paid-media/`
+- `skills/product/`
+- `skills/project-management/`
+- `skills/sales/`
+- `skills/spatial-computing/`
+- `skills/support/`

@@ -952,6 +952,90 @@ function getHighlights(destination: string) {
         ];
     }
 
+    // Specific: Cape Town
+    if (lower.includes("cape town")) {
+        return [
+            {
+                id: "h1",
+                title: "Table Mountain Aerial Cableway:",
+                description: "Experience world-clash views from the rotating cable car that takes you to the summit of South Africa's most iconic landmark.",
+                photo_urls: [
+                    "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1576485290814-1c72aa4bbb8e?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1563293817-290875e533f8?w=400&h=300&fit=crop"
+                ],
+                actions: []
+            },
+            {
+                id: "h2",
+                title: "Boulders Beach Penguin Colony:",
+                description: "Visit the world-famous colony of African Penguins in Simon's Town. Get close to these tuxedoed locals on sheltered sandy beaches.",
+                photo_urls: [
+                    "https://images.unsplash.com/photo-1565173161309-88062837330a?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1590424753062-32517f3523f7?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1579543132714-3a7266657989?w=400&h=300&fit=crop"
+                ],
+                actions: []
+            },
+            {
+                id: "h3",
+                title: "V&A Waterfront:",
+                description: "A bustling hub of shopping, dining, and entertainment set against the backdrop of Table Mountain and the historic working harbour.",
+                photo_urls: [
+                    "https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1524675202747-2f6003d50ede?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1516109968840-7561842eb408?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1549445100-c9a17f6927d6?w=400&h=300&fit=crop"
+                ],
+                actions: []
+            }
+        ];
+    }
+
+    // Specific: Lagos
+    if (lower.includes("lagos")) {
+        return [
+            {
+                id: "h1",
+                title: "Lekki Conservation Centre:",
+                description: "Nature in the middle of the megacity. Home to the longest canopy walkway in Africa and thriving coastal wetlands.",
+                photo_urls: [
+                    "https://images.unsplash.com/photo-1594392174827-0a4b9b0d36c2?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1570535352654-e0b62e4f0acc?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1576481691350-fcbb12ad648a?w=400&h=300&fit=crop"
+                ],
+                actions: []
+            },
+            {
+                id: "h2",
+                title: "Nike Art Gallery:",
+                description: "West Africa's largest art gallery, showcasing four floors of stunning Nigerian art, crafts, and culture in the heart of Lekki.",
+                photo_urls: [
+                    "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1591147139235-97e3f89a9cba?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1566417713940-bf51d74e90a5?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1555581938-230410ac394e?w=400&h=300&fit=crop"
+                ],
+                actions: []
+            },
+            {
+                id: "h3",
+                title: "Tarkwa Bay Beach:",
+                description: "A sheltered, accessible island beach popular with surfers and locals alike. Only reachable by water taxi from Victoria Island.",
+                photo_urls: [
+                    "https://images.unsplash.com/photo-1559827291-72ee739d0d9a?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1534971252646-6da6a1660f60?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1566373067171-2302c0cca8d5?w=400&h=300&fit=crop"
+                ],
+                actions: []
+            }
+        ];
+    }
+
     // Region-aware generic fallback
     const region = detectRegion(destination);
 
@@ -1089,7 +1173,7 @@ function generateBudgetOnlyResponse(budgetStr: string, filters?: any) {
     ];
 
     // Filter destinations that fit the budget, pick up to 6
-    const budgetInUSD = isNGN ? amount / 750 : amount; // Rough NGN→USD conversion
+    const budgetInUSD = isNGN ? amount / 1500 : amount; // Updated NGN→USD conversion for Reality Checker standard
     const affordable = destinationPool
         .filter(d => d.baseCostUSD <= budgetInUSD * 1.1) // Allow 10% flex
         .slice(0, 6);
