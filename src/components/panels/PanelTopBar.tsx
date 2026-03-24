@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { X, Heart, Plus, Share2 } from "lucide-react";
+import { X, Heart, Plus, Upload } from "lucide-react";
 import type { PanelAction } from "@/types/panel";
 import { cn } from "@/lib/utils";
+import { IconButton } from "./PanelElements";
 
 interface PanelTopBarProps {
     title?: string;
@@ -12,6 +12,7 @@ interface PanelTopBarProps {
     isSaved?: boolean;
     onClose: () => void;
     onAction?: (action: string, payload?: unknown) => void;
+    transparent?: boolean;
 }
 
 export default function PanelTopBar({
@@ -21,88 +22,90 @@ export default function PanelTopBar({
     isSaved = false,
     onClose,
     onAction,
+    transparent = false,
 }: PanelTopBarProps) {
     const iconMap: Record<string, React.ElementType> = {
         heart: Heart,
         plus: Plus,
-        share: Share2,
+        share: Upload, // Map 'share' action to 'Upload' icon matching Image 1
     };
 
     return (
-        <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-white/90 backdrop-blur-sm border-b border-neutral-100">
-            {/* Left: Close */}
-            <Button
-                variant="ghost"
-                size="icon"
+        <div className={cn(
+            "flex items-center justify-between px-6 h-[68px] z-50 transition-all",
+            transparent ? "absolute top-0 inset-x-0 bg-transparent border-none" : "sticky top-0 bg-white/95 backdrop-blur-md border-b border-neutral-100/60"
+        )}>
+            {/* Left: Close (X) button */}
+            <IconButton
+                icon={X}
                 onClick={onClose}
-                className="h-9 w-9 rounded-full text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100"
-            >
-                <X className="w-5 h-5" />
-            </Button>
+                aria-label="Close panel"
+                className="shadow-sm"
+            />
 
-            {/* Center: Title (optional, truncated) */}
-            {title && (
-                <span className="text-[15px] font-semibold text-neutral-900 truncate max-w-[200px]">
-                    {title}
-                </span>
+            {/* Center: Title (optional) */}
+            {!transparent && title && (
+                <div className="flex-1 min-w-0 px-4">
+                    <span className="text-[17px] font-bold text-neutral-900 truncate block tracking-tight">
+                        {title}
+                    </span>
+                </div>
             )}
+            {transparent && <div className="flex-1" />}
 
             {/* Right: Action buttons */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-3 shrink-0">
                 {actions.map((action) => {
                     const Icon = iconMap[action.icon || ""] || null;
 
-                    // Special handling for save/add states
-                    if (action.action === "TOGGLE_SAVE") {
-                        return (
-                            <Button
-                                key={action.id}
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => onAction?.(action.action, action.payload)}
-                                className={cn(
-                                    "h-9 w-9 rounded-full",
-                                    isSaved
-                                        ? "text-rose-500 hover:text-rose-600"
-                                        : "text-neutral-500 hover:text-neutral-900"
-                                )}
-                            >
-                                <Heart className={cn("w-4 h-4", isSaved && "fill-current")} />
-                            </Button>
-                        );
-                    }
-
+                    // Special handling for Add To Trip
                     if (action.action === "ADD_TO_TRIP") {
                         return (
-                            <Button
+                            <IconButton
                                 key={action.id}
-                                variant="outline"
-                                size="sm"
+                                icon={Plus}
+                                label={isAdded ? "Added" : "Add to trip"}
                                 onClick={() => onAction?.(action.action, action.payload)}
                                 className={cn(
-                                    "h-9 rounded-full px-3 text-[13px] font-medium border-neutral-200 transition-all",
+                                    "h-[38px] px-5",
                                     isAdded
-                                        ? "bg-neutral-900 text-white border-neutral-900 hover:bg-neutral-800"
-                                        : "hover:bg-neutral-50"
+                                        ? "bg-neutral-900 border-neutral-900"
+                                        : "bg-white"
                                 )}
+                                iconClassName={cn(isAdded ? "text-white" : "text-neutral-900", "w-3.5 h-3.5 mr-0.5")}
                             >
-                                <Plus className="w-3.5 h-3.5 mr-1" />
-                                {isAdded ? "Added" : "Add"}
-                            </Button>
+                                {isAdded && <style>{`.text-white { color: white !important; }`}</style>}
+                                <span className={cn(isAdded ? "text-white" : "text-neutral-900")}>
+                                    {isAdded ? "Added" : "Add to trip"}
+                                </span>
+                            </IconButton>
                         );
                     }
 
-                    // Generic action button
+                    // Special handling for Save (Heart)
+                    if (action.action === "TOGGLE_SAVE") {
+                        return (
+                            <IconButton
+                                key={action.id}
+                                icon={Heart}
+                                onClick={() => onAction?.(action.action, action.payload)}
+                                className={cn(
+                                    "h-[38px] w-[38px]",
+                                    isSaved && "text-rose-500"
+                                )}
+                                iconClassName={cn(isSaved && "fill-current text-rose-500")}
+                            />
+                        );
+                    }
+
+                    // Generic action button (e.g., Share -> Upload icon)
                     return (
-                        <Button
+                        <IconButton
                             key={action.id}
-                            variant="ghost"
-                            size="icon"
+                            icon={Icon || Upload}
                             onClick={() => onAction?.(action.action, action.payload)}
-                            className="h-9 w-9 rounded-full text-neutral-500 hover:text-neutral-900"
-                        >
-                            {Icon ? <Icon className="w-4 h-4" /> : null}
-                        </Button>
+                            className="h-[38px] w-[38px]"
+                        />
                     );
                 })}
             </div>

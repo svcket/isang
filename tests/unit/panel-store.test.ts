@@ -44,7 +44,7 @@ describe("Panel Store", () => {
         const mockPayload: PanelPayload = {
             panel_type: "HOTEL",
             header: { title: "Test Hotel" },
-            hero: { layout: "grid", images: [] },
+            hero: { title: "Test Hero", layout: "grid", images: [] },
             tabs: ["Overview", "Reviews"],
             sections: [],
             actions: [],

@@ -2,7 +2,8 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useAppStore } from "@/lib/store";
-import { ArrowUp, Paperclip, Mic, Image as ImageIcon, FileText, Lock } from "lucide-react";
+import { usePanelStore } from "@/lib/panel-store";
+import { ArrowUp, Paperclip, Mic, ImageIcon, FileText, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
     Popover,
@@ -153,10 +154,18 @@ export default function ChatInput() {
         filterState,
     ]);
 
+    const isPanelOpen = usePanelStore((s) => s.open);
+
     if (isLocked) {
         return (
-            <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/80 backdrop-blur-sm px-4 sm:px-6 py-4">
-                <div className="max-w-2xl mx-auto flex flex-col items-center gap-3">
+            <div className={cn(
+                "fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/80 backdrop-blur-sm px-4 sm:px-6 py-4 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)",
+                isPanelOpen && "pl-[24px] sm:pr-[616px] md:pr-[736px] lg:pr-[856px]"
+            )}>
+                <div className={cn(
+                    "flex flex-col items-center gap-3 w-full",
+                    !isPanelOpen && "max-w-2xl mx-auto"
+                )}>
                     <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Lock className="h-4 w-4" />
                         <span>You&apos;ve used all 3 preview turns</span>
@@ -176,8 +185,14 @@ export default function ChatInput() {
     }
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-white via-white to-transparent pb-6 pt-10 px-4">
-            <div className="max-w-[700px] mx-auto w-full">
+        <div className={cn(
+            "fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-white via-white to-transparent pb-6 pt-10 px-4 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)",
+            isPanelOpen && "pl-[24px] sm:pr-[616px] md:pr-[736px] lg:pr-[856px]"
+        )}>
+            <div className={cn(
+                "w-full",
+                !isPanelOpen ? "max-w-[700px] mx-auto" : "max-w-full"
+            )}>
                 {/* Inputs */}
                 <input type="file" ref={imageInputRef} accept="image/*" className="hidden" aria-label="Upload image" />
                 <input type="file" ref={fileInputRef} className="hidden" aria-label="Upload file" />

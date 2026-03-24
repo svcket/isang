@@ -1,31 +1,53 @@
-import { Check, X } from "lucide-react";
+"use client";
+
+import React from "react";
 
 interface ProsConsBlockProps {
-    pros: string[];
-    cons: string[];
+    pros: { title: string; description: string }[];
+    cons: { title: string; description: string }[];
 }
 
 export default function ProsConsBlock({ pros, cons }: ProsConsBlockProps) {
     return (
-        <div className="grid grid-cols-2 gap-4">
-            {/* Pros */}
-            <div className="space-y-1.5">
-                {pros.map((p) => (
-                    <div key={p} className="flex items-start gap-1.5 text-[13px] text-green-700">
-                        <Check className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                        <span>{p}</span>
-                    </div>
-                ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+            {/* Pros Card */}
+            <div className="bg-[#F1F9F1] border border-[#D1EAD1] rounded-[24px] p-6 space-y-6">
+                <div className="flex items-center gap-2.5 text-[14px] font-bold text-neutral-900 tracking-tight">
+                    <span className="text-[16px]">👍</span>
+                    <span className="uppercase tracking-wide">PROS</span>
+                </div>
+                <div className="space-y-5">
+                    {pros.map((item, idx) => (
+                        <div key={idx} className="space-y-1">
+                            <div className="text-[14px] font-bold text-neutral-950">
+                                {item.title}
+                            </div>
+                            <div className="text-[13px] leading-[1.6] text-neutral-500 font-medium">
+                                {item.description}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            {/* Cons */}
-            <div className="space-y-1.5">
-                {cons.map((c) => (
-                    <div key={c} className="flex items-start gap-1.5 text-[13px] text-red-600">
-                        <X className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                        <span>{c}</span>
-                    </div>
-                ))}
+            {/* Cons Card */}
+            <div className="bg-[#FFF1F1] border border-[#FAD1D1] rounded-[24px] p-6 space-y-6">
+                <div className="flex items-center gap-2.5 text-[14px] font-bold text-neutral-900 tracking-tight">
+                    <span className="text-[16px]">👎</span>
+                    <span className="uppercase tracking-wide">CONS</span>
+                </div>
+                <div className="space-y-5">
+                    {cons.map((item, idx) => (
+                        <div key={idx} className="space-y-1">
+                            <div className="text-[14px] font-bold text-neutral-950">
+                                {item.title}
+                            </div>
+                            <div className="text-[13px] leading-[1.6] text-neutral-500 font-medium">
+                                {item.description}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

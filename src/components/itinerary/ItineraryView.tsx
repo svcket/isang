@@ -9,7 +9,6 @@ import {
     DollarSign,
     Edit3,
     Trash2,
-    RefreshCw,
     Lock,
     ChevronDown,
     ChevronUp,
@@ -18,34 +17,75 @@ import { useState } from "react";
 import type { ItineraryDay, TimeBlock } from "@/types";
 
 function TimeBlockCard({
+    dayNumber,
     block,
     isBlurred,
 }: {
+    dayNumber: number;
     block: TimeBlock;
     isBlurred: boolean;
 }) {
+    const deleteBlock = useAppStore((s) => s.deleteItineraryBlock);
+    const updateBlock = useAppStore((s) => s.updateItineraryBlock);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editData, setEditData] = useState({ name: block.name, time: block.time });
+
+    const handleSave = () => {
+        updateBlock(dayNumber, block.id, editData);
+        setIsEditing(false);
+    };
+
     return (
         <Card
-            className={`border-border/40 bg-card/80 ${isBlurred ? "itinerary-blur" : ""
+            className={`group border-border/40 bg-card/80 transition-all hover:bg-card hover:border-border/60 ${isBlurred ? "itinerary-blur" : ""
                 }`}
         >
             <CardContent className="p-4 flex items-start gap-4">
                 {/* Time */}
                 <div className="shrink-0 text-center min-w-[56px]">
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3" />
-                        <span className="font-medium">{block.time}</span>
-                    </div>
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            value={editData.time}
+                            onChange={(e) => setEditData({ ...editData, time: e.target.value })}
+                            className="w-full text-xs font-medium bg-transparent border-b border-primary/50 focus:outline-none"
+                            placeholder="Time"
+                            aria-label="Activity Time"
+                        />
+                    ) : (
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            <span className="font-medium">{block.time}</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-foreground truncate">
-                        {block.name}
-                    </h4>
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            value={editData.name}
+                            onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                            className="w-full text-sm font-semibold bg-transparent border-b border-primary/50 focus:outline-none"
+                            autoFocus
+                            placeholder="Activity Name"
+                            aria-label="Activity Name"
+                        />
+                    ) : (
+                        <h4 className="text-sm font-semibold text-foreground truncate">
+                            {block.name}
+                        </h4>
+                    )}
                     <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 leading-relaxed">
                         {block.description}
                     </p>
+                    {isEditing && (
+                        <div className="flex gap-2 mt-2">
+                            <Button size="xs" onClick={handleSave} className="h-6 text-[10px] px-2 bg-primary text-white">Save</Button>
+                            <Button size="xs" variant="ghost" onClick={() => setIsEditing(false)} className="h-6 text-[10px] px-2 text-muted-foreground">Cancel</Button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Cost & Actions */}
@@ -56,15 +96,20 @@ function TimeBlockCard({
                             {block.costEstimate}
                         </span>
                     )}
-                    {!isBlurred && (
+                    {!isBlurred && !isEditing && (
                         <div className="flex gap-1 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button className="p-1 rounded hover:bg-muted" title="Edit block" aria-label="Edit block">
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className="p-1 rounded hover:bg-muted"
+                                title="Edit block"
+                            >
                                 <Edit3 className="h-3 w-3 text-muted-foreground" />
                             </button>
-                            <button className="p-1 rounded hover:bg-muted" title="Refresh block" aria-label="Refresh block">
-                                <RefreshCw className="h-3 w-3 text-muted-foreground" />
-                            </button>
-                            <button className="p-1 rounded hover:bg-destructive/10" title="Delete block" aria-label="Delete block">
+                            <button
+                                onClick={() => deleteBlock(dayNumber, block.id)}
+                                className="p-1 rounded hover:bg-destructive/10"
+                                title="Delete block"
+                            >
                                 <Trash2 className="h-3 w-3 text-destructive" />
                             </button>
                         </div>
@@ -83,16 +128,28 @@ function DaySection({
     isBlurred: boolean;
 }) {
     const [expanded, setExpanded] = useState(!isBlurred);
+    const addBlock = useAppStore((s) => s.addItineraryBlock);
+
+    const handleAddStep = () => {
+        const newBlock: TimeBlock = {
+            id: Math.random().toString(36).substring(2, 9),
+            time: "12:00 PM",
+            name: "New Activity",
+            description: "Click edit to add details.",
+            category: "activities"
+        };
+        addBlock(day.dayNumber, newBlock);
+    };
 
     return (
         <div className={`${isBlurred ? "relative" : ""}`}>
             {/* Day Header */}
-            <button
-                onClick={() => !isBlurred && setExpanded(!expanded)}
-                className="w-full flex items-center justify-between py-3 group"
-                disabled={isBlurred}
-            >
-                <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between group">
+                <button
+                    onClick={() => !isBlurred && setExpanded(!expanded)}
+                    className="flex-1 flex items-center gap-3 py-3"
+                    disabled={isBlurred}
+                >
                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
                         {day.dayNumber}
                     </div>
@@ -104,15 +161,27 @@ function DaySection({
                             <p className="text-[11px] text-muted-foreground">{day.date}</p>
                         )}
                     </div>
-                </div>
+                </button>
                 {!isBlurred && (
-                    expanded ? (
-                        <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                    )
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-[10px] text-muted-foreground hover:text-primary"
+                            onClick={handleAddStep}
+                        >
+                            + Add Step
+                        </Button>
+                        <button onClick={() => setExpanded(!expanded)} className="p-1">
+                            {expanded ? (
+                                <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                            )}
+                        </button>
+                    </div>
                 )}
-            </button>
+            </div>
 
             {/* Time Blocks */}
             {expanded && (
@@ -120,6 +189,7 @@ function DaySection({
                     {day.blocks.map((block) => (
                         <TimeBlockCard
                             key={block.id}
+                            dayNumber={day.dayNumber}
                             block={block}
                             isBlurred={isBlurred}
                         />
@@ -163,7 +233,9 @@ export default function ItineraryView() {
                     return (
                         <div key={day.dayNumber} className="relative group">
                             <DaySection day={day} isBlurred={isBlurred} />
-                            {index < itinerary.days.length - 1 && <Separator />}
+                            {index < itinerary.days.length - 1 && (
+                                <div className="ml-11 border-l border-border/40 h-4" />
+                            )}
                         </div>
                     );
                 })}

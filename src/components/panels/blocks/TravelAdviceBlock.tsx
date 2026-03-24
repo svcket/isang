@@ -1,49 +1,32 @@
-import { Sun, Cloud, Leaf, Snowflake } from "lucide-react";
+import React from "react";
 
 interface TravelAdviceBlockProps {
-    items: { season: string; text: string }[];
+    items: { day?: string; title: string; description: string }[];
 }
-
-const seasonIcons: Record<string, React.ElementType> = {
-    Spring: Leaf,
-    Summer: Sun,
-    Fall: Cloud,
-    Winter: Snowflake,
-};
-
-const seasonColors: Record<string, string> = {
-    Spring: "bg-green-50 text-green-700",
-    Summer: "bg-amber-50 text-amber-700",
-    Fall: "bg-orange-50 text-orange-700",
-    Winter: "bg-blue-50 text-blue-700",
-};
 
 export default function TravelAdviceBlock({ items }: TravelAdviceBlockProps) {
     return (
-        <div className="space-y-2">
-            {items.map((item) => {
-                const Icon = seasonIcons[item.season] || Sun;
-                const colorClass = seasonColors[item.season] || "bg-neutral-50 text-neutral-700";
-
-                return (
-                    <div
-                        key={item.season}
-                        className="flex items-start gap-3 p-2.5 rounded-lg bg-neutral-50"
-                    >
-                        <div className={`p-1.5 rounded-md ${colorClass} flex-shrink-0`}>
-                            <Icon className="w-3.5 h-3.5" />
-                        </div>
-                        <div className="min-w-0">
-                            <span className="text-[13px] font-semibold text-neutral-900">
-                                {item.season}
+        <div className="space-y-4">
+            {items.map((item, i) => (
+                <div
+                    key={i}
+                    className="flex flex-col gap-1 p-4 rounded-xl bg-neutral-50 border border-neutral-100/50"
+                >
+                    <div className="flex items-center gap-2">
+                        {item.day && (
+                            <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                                {item.day}
                             </span>
-                            <p className="text-[13px] text-neutral-500 mt-0.5 leading-relaxed">
-                                {item.text}
-                            </p>
-                        </div>
+                        )}
+                        <h5 className="text-[14px] font-bold text-neutral-900">
+                            {item.title}
+                        </h5>
                     </div>
-                );
-            })}
+                    <p className="text-[14px] text-neutral-500 leading-relaxed font-medium">
+                        {item.description}
+                    </p>
+                </div>
+            ))}
         </div>
     );
 }

@@ -1,43 +1,43 @@
-# Agent Skills Manifest (v2 - Granular)
+# Master Agency Skills Manifest (v3.1)
 
-This manifest defines the location of specialized expert personas within the Isang project. The Orchestration Layer utilizes this index to route tasks to specific, folder-based skills.
-
----
-
-## 🎨 Design Division
-
-- **UI Designer**: `/Users/socket/isang/skills/design/ui-designer/SKILL.md`
-- **UX Architect**: `/Users/socket/isang/skills/design/ux-architect/SKILL.md`
-
-## 💻 Engineering Division
-
-- **Backend & Data Architect**: `/Users/socket/isang/skills/engineering/backend-architect/SKILL.md`
-- **DevOps & Security Automator**: `/Users/socket/isang/skills/engineering/devops-automator/SKILL.md`
-- **Frontend Developer (Orchestrator)**: `/Users/socket/isang/skills/engineering/frontend-developer/SKILL.md`
-- **Mobile App Builder**: `/Users/socket/isang/skills/engineering/mobile-app-builder/SKILL.md`
-- **AI Response Engineer**: `/Users/socket/isang/skills/engineering/ai-response-engineer/SKILL.md`
-
-## 🧪 Testing & Verification Division
-
-- **Senior QA Specialist**: `/Users/socket/isang/skills/testing/qa-specialist/SKILL.md`
-- **Reality Checker**: `/Users/socket/isang/skills/testing/reality-checker/SKILL.md`
-
-## 🚀 Marketing & Growth Division
-
-- **Growth Hacker**: `/Users/socket/isang/skills/marketing/growth-hacker/SKILL.md`
-
-## ✨ Specialized Division
-
-- **Behavioral Nudge Engine**: `/Users/socket/isang/skills/specialized/behavioral-nudge-engine/SKILL.md`
-- **Cultural Intelligence Strategist**: `/Users/socket/isang/skills/specialized/cultural-intelligence-strategist/SKILL.md`
+This manifest indexes the **Active Swarm Roles** across the ecosystem and provides access to the **Master Library** of 119+ expert personas.
 
 ---
 
-## 🏗️ Future Expansion (Placeholders)
-- `skills/game-development/`
-- `skills/paid-media/`
-- `skills/product/`
-- `skills/project-management/`
-- `skills/sales/`
-- `skills/spatial-computing/`
-- `skills/support/`
+## 🏛️ C-Suite & Specialized Division (ACTIVE)
+
+- **Senior Project Manager**: `skills/project-management/project-manager/SKILL.md`
+- **Compliance Auditor**: `skills/specialized/compliance-auditor/SKILL.md`
+
+## 🎨 Creative & Product Division (ACTIVE)
+
+- **Design Engineer**: `skills/design/design-engineer/SKILL.md`
+- **Content Writer**: `skills/marketing/content-creator/SKILL.md`
+- **Social Media Strategist**: `skills/marketing/social-media-strategist/SKILL.md`
+- **UI Designer**: `skills/design/ui-designer/SKILL.md`
+- **UX Architect**: `skills/design/ux-architect/SKILL.md`
+
+## ⚙️ Engineering Division (ACTIVE)
+
+- **Frontend Developer**: `skills/engineering/frontend-developer/SKILL.md`
+- **Backend Architect**: `skills/engineering/backend-architect/SKILL.md`
+- **DevOps Automator**: `skills/engineering/devops-automator/SKILL.md`
+
+---
+
+## 📚 Master Skills Library (119+ Experts)
+**Source Code**: [`LIBRARY.md`](./LIBRARY.md)
+
+Refer to the Library to "pull" new expert roles into any project. The Library covers:
+- **Sales & Paid Media**
+- **Spatial Computing & XR**
+- **Game Development (Unity/Unreal/Godot)**
+- **Advanced Support & Legal**
+- **Data Engineering & AI Optimization**
+
+---
+
+## Skill Architecture Reminder
+- **Layer 1: Directive**: `SKILL.md` files (Instructions).
+- **Layer 2: Orchestration**: `AGENTS.md` (Decision making).
+- **Layer 3: Execution**: `execution/` (Deterministic tools).

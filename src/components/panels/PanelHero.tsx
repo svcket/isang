@@ -1,14 +1,14 @@
-"use client";
-
 import Image from "next/image";
 import type { ImageRef } from "@/types/panel";
-import { Button } from "@/components/ui/button";
-import { Camera } from "lucide-react";
+import { IconButton } from "./PanelElements";
+import { Grid2X2 } from "lucide-react";
+
 
 interface PanelHeroProps {
     images: ImageRef[];
     layout: "single" | "grid" | "none";
     title?: string;
+    subtitle?: string;
     onOpenGallery?: () => void;
 }
 
@@ -16,92 +16,126 @@ export default function PanelHero({
     images,
     layout,
     title,
+    subtitle,
     onOpenGallery,
 }: PanelHeroProps) {
     if (layout === "none" || images.length === 0) return null;
 
-    // ─── Single: Full-bleed hero with overlay title ────────────────────
+    // ─── Single: Full-bleed hero carousel ──────────────────────────────
     if (layout === "single") {
-        const hero = images[0]!;
         return (
-            <div className="relative w-full aspect-[16/9] overflow-hidden bg-neutral-100 rounded-2xl">
-                <Image
-                    src={hero.url}
-                    alt={title || "Hero"}
-                    fill
-                    unoptimized
-                    className="object-cover"
-                    sizes="480px"
-                />
-                {/* Gradient overlay - Removed because title is now above the hero */}
+            <div className="relative w-full aspect-[4/3] sm:aspect-[4/3] overflow-hidden group/hero shadow-sm rounded-[24px]">
+                <div className="absolute inset-0 flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+                    {images.map((img) => (
+                        <div key={img.id} className="relative flex-none w-full h-full snap-center bg-neutral-100">
+                            <Image
+                                src={img.url}
+                                alt={title || "Hero"}
+                                fill
+                                unoptimized
+                                className="object-cover"
+                                sizes="520px"
+                            />
+                        </div>
+                    ))}
+                </div>
 
+                {/* High-Fidelity Gradient Overlay */}
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent px-6 pb-6 pt-24 flex flex-col justify-end pointer-events-none">
+                    <div className="text-[26px] font-bold text-white tracking-tight leading-tight">{title}</div>
+                    {subtitle && <div className="text-[14px] font-medium text-white/90 mt-1">{subtitle}</div>}
+                </div>
 
-                {/* Gallery CTA */}
-                {onOpenGallery && images.length > 1 && (
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={onOpenGallery}
-                        className="absolute bottom-4 right-4 h-9 rounded-full px-4 text-[13px] font-medium bg-white/95 text-neutral-900 border border-neutral-200/50 hover:bg-white shadow-sm transition-all"
-                    >
-                        <Camera className="w-4 h-4 mr-2" />
-                        Show all photos
-                    </Button>
+                {/* Gallery CTA overlay */}
+                {images.length > 1 && onOpenGallery && (
+                    <div className="absolute bottom-5 right-5 flex gap-2">
+                        <IconButton
+                            icon={Grid2X2}
+                            label="Show all photos"
+                            onClick={onOpenGallery}
+                            className="pointer-events-auto shadow-lg"
+                        />
+                    </div>
                 )}
             </div>
         );
     }
 
-    // ─── Grid: 1 large + up to 4 small ─────────────────────────────────
-    const [main, ...rest] = images;
-    const gridImages = rest.slice(0, 4);
+    // ─── Grid: 1 large + 4 small ───────────────────────────────────────
+    const [hero, ...rest] = images;
 
     return (
-        <div className="relative w-full">
-            <div className="grid grid-cols-4 grid-rows-2 gap-[6px] sm:gap-2 h-[260px] sm:h-[300px] overflow-hidden rounded-2xl">
-                {/* Main image */}
-                <div className="col-span-2 row-span-2 relative bg-neutral-100">
-                    <Image
-                        src={main!.url}
-                        alt={title || "Main"}
-                        fill
-                        unoptimized
-                        className="object-cover"
-                        sizes="240px"
-                    />
+        <div className="relative w-full h-[320px] group overflow-hidden rounded-[24px]">
+            <div className="grid grid-cols-[1.8fr_1fr_1fr] gap-2 h-full">
+                {/* Main Hero Image */}
+                <div className="relative h-full overflow-hidden bg-neutral-200">
+                    {hero ? (
+                        <Image
+                            src={hero.url}
+                            alt={title || "Main"}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                            sizes="(max-width: 420px) 100vw, 420px"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-neutral-100">
+                            <span className="text-[10px] text-neutral-400">No Image</span>
+                        </div>
+                    )}
                 </div>
 
-                {/* Small images */}
-                {gridImages.map((img, i) => (
-                    <div key={img.id} className="relative bg-neutral-100">
-                        <Image
-                            src={img.url}
-                            alt={`Photo ${i + 2}`}
-                            fill
-                            unoptimized
-                            className="object-cover"
-                            sizes="120px"
-                        />
-                    </div>
-                ))}
+                {/* Column 2: Stacked Images */}
+                <div className="grid grid-rows-2 gap-2 h-full">
+                    {[rest[0], rest[1]].map((img, i) => (
+                        <div key={img?.id || `c2-${i}`} className="relative overflow-hidden bg-neutral-100">
+                            {img ? (
+                                <Image
+                                    src={img.url}
+                                    alt={`${title || "Place"} gallery ${i + 2}`}
+                                    fill
+                                    className="object-cover"
+                                    unoptimized
+                                    sizes="200px"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-neutral-50" />
+                            )}
+                        </div>
+                    ))}
+                </div>
 
-                {/* Fill empty slots */}
-                {Array.from({ length: Math.max(0, 4 - gridImages.length) }).map((_, i) => (
-                    <div key={`empty-${i}`} className="bg-neutral-50" />
-                ))}
+                {/* Column 3: Stacked Images */}
+                <div className="grid grid-rows-2 gap-2 h-full">
+                    {[rest[2], rest[3]].map((img, i) => (
+                        <div key={img?.id || `c3-${i}`} className="relative overflow-hidden bg-neutral-100">
+                            {img ? (
+                                <Image
+                                    src={img.url}
+                                    alt={`${title || "Place"} gallery ${i + 4}`}
+                                    fill
+                                    className="object-cover"
+                                    unoptimized
+                                    sizes="200px"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-neutral-50" />
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Gallery CTA overlay */}
-            {onOpenGallery && images.length > 3 && (
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onOpenGallery}
-                    className="absolute bottom-4 right-4 h-9 rounded-full px-4 text-[13px] font-medium bg-white/95 text-neutral-900 border border-neutral-200/50 hover:bg-white shadow-sm transition-all"
-                >
-                    <Camera className="w-4 h-4 mr-2" />
-                    Show all photos
-                </Button>
+            {onOpenGallery && images.length > 1 && (
+                <div className="absolute bottom-5 right-5 flex gap-2">
+                    <IconButton
+                        icon={Grid2X2}
+                        label="Show all photos"
+                        onClick={onOpenGallery}
+                        className="pointer-events-auto shadow-xl"
+                    />
+                </div>
             )}
         </div>
     );

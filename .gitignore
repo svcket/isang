@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# testing
+/coverage
+/test-results
+
+# agency skills
+/skills
+/public/attraction
+/public/country
+/public/stay
+
+# playwright
+/playwright-report

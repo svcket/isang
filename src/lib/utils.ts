@@ -71,12 +71,20 @@ export function generateSection(type: Section['type'], destination: string): Sec
         break;
     }
 
+    const entityTypeMap: Record<string, string> = {
+      'LODGING': 'HOTEL',
+      'FOOD': 'RESTAURANT',
+      'ACTIVITY': 'ACTIVITY',
+      'FLIGHT': 'FLIGHT'
+    };
+
     items.push({
       id: `${type.toLowerCase()}-${destination}-${i}`,
       title,
       image_url: `https://source.unsplash.com/random/400x300?${imageKeyword}`,
       meta: [], // Removed generic "Details"
       price_chip: price,
+      entity_type: entityTypeMap[type] || 'PLACE',
     });
   }
 

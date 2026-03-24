@@ -1,10 +1,12 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase-server";
 import type {
     ResponseBlock,
     DestinationBlock,
 } from "@/types/response-block";
 import { generateSection } from "@/lib/utils";
 import type { AssistantResponse } from "@/types";
+import { SyntheticGenerator } from "@/lib/ai/blocks/generator";
 
 export interface ChatFilters {
     destination?: string;
@@ -496,6 +498,23 @@ export function generateMockResponse(
     const durationMatch = lower.match(/(\d+)\s*(?:day|night|week)/);
     const hasDuration = !!durationMatch || lower.includes("weekend");
 
+    // ─── ITINERARY REFINEMENT (Phase 15 - The Living Plan) ─────────────
+    // Detect keywords like "change", "move", "swap", "remove", "add" + "day" or "itinerary"
+    const isRefinement = (lower.includes("change") || lower.includes("remove") || lower.includes("swap") || lower.includes("move") || lower.includes("add")) &&
+        (lower.includes("day") || lower.includes("itinerary") || lower.includes("breakfast") || lower.includes("lunch") || lower.includes("dinner"));
+
+    if (isRefinement && (snapshot?.destination || detectedDest)) {
+        const dest = snapshot?.destination || detectedDest?.dest || "destination";
+        return {
+            reply: `Coming right up! I've updated your itinerary for ${dest} as requested.`,
+            data: {
+                // Return a fresh itinerary for the same destination, simulating an "edit"
+                // In a real app, this would be a diff or a full state-aware generation
+                ...generateItineraryResponse(dest, 3, snapshot?.budget, snapshot?.dates).data
+            }
+        };
+    }
+
     // ─── 4. ITINERARY (Pattern D) ──────────────────────────────────────
     if (lower.includes("itinerary") || (action_id === 'create_itinerary')) {
         const dest = filters?.destination || snapshot?.destination || detectedDest?.dest || "Cape Town";
@@ -639,6 +658,19 @@ export function generateMockResponse(
             const currencyStr = (budgetStr && budgetStr.toString().match(/[$€£¥₦]/))
                 ? budgetStr.toString().match(/[$€£¥₦]/)![0]
                 : (filters?.budget?.currency === "NGN" ? "₦" : targetCurrency);
+
+            // ─── SYNTHETIC BOOST: Use Generator for Vibe Cities ──────────────
+            const generator = new SyntheticGenerator(targetDest);
+            if (generator) {
+                const syntheticResponse = generator.generateTripPlan(durationStr || "5 days", budgetStr || "flexible");
+                return {
+                    reply: syntheticResponse.summary,
+                    data: {
+                        responseBlock: syntheticResponse,
+                        tripSnapshot: syntheticResponse.trip_meta as AssistantResponse['tripSnapshot']
+                    }
+                };
+            }
 
             // Explicitly pass undefined for missing values to let the frontend handle placeholders
             return generateTripResponse(
@@ -1697,6 +1729,79 @@ export async function POST(request: NextRequest) {
         await new Promise((resolve) => setTimeout(resolve, 800));
 
         const response = generateMockResponse(message, turnCount, tripSnapshot, action_id, filters, action_payload);
+
+        // ─── Persistence Logic (Phase 16) ──────────────────────────────────
+        if (response.data?.itinerary) {
+            const supabase = await createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (user) {
+                try {
+                    const snap = response.data.tripSnapshot;
+                    const itinerary = response.data.itinerary;
+
+                    // 1. Upsert Trip
+                    const { data: trip, error: tripError } = await supabase
+                        .from('trips')
+                        .upsert({
+                            user_id: user.id,
+                            destination: snap?.destination || "Unknown",
+                            duration: snap?.duration,
+                            budget_amount: snap?.budget?.amount,
+                            budget_currency: snap?.budget?.currency,
+                            travel_style: snap?.travelStyle,
+                            status: 'planning'
+                        }, { onConflict: 'id' }) // This would need a tripId from the frontend in a real app
+                        .select()
+                        .single();
+
+                    if (trip && !tripError) {
+                        // 2. Insert Itinerary linked to Trip
+                        const { data: it, error: itError } = await supabase
+                            .from('itineraries')
+                            .insert({
+                                trip_id: trip.id,
+                                total_cost_estimate: itinerary.totalEstimatedCost
+                            })
+                            .select()
+                            .single();
+
+                        if (it && !itError) {
+                            // 3. Insert Days and Blocks (Simplified for now)
+                            // In a real app, we'd batch these
+                            for (const day of itinerary.days) {
+                                const { data: d } = await supabase
+                                    .from('itinerary_days')
+                                    .insert({
+                                        itinerary_id: it.id,
+                                        day_number: day.dayNumber,
+                                        title: day.title
+                                    })
+                                    .select()
+                                    .single();
+
+                                if (d) {
+                                    await supabase.from('time_blocks').insert(
+                                        day.blocks.map((b, idx) => ({
+                                            day_id: d.id,
+                                            time: b.time,
+                                            name: b.name,
+                                            description: b.description,
+                                            cost_estimate: b.costEstimate,
+                                            category: b.category,
+                                            order_index: idx
+                                        }))
+                                    );
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("Persistence failed:", e);
+                    // Non-blocking for the user
+                }
+            }
+        }
 
         return NextResponse.json(response);
     } catch (error) {

@@ -1,224 +1,47 @@
 # Agent Instructions
 
-> This file is mirrored across CLAUDE.md, AGENTS.md, and GEMINI.md so the same instructions load in any AI environment.
+> This file is the Master Orchestration for the Professional Agency Swarm. It is mirrored from the independent Source of Truth at `/Users/socket/agency-swarm-core/`.
 
-You operate within a 3-layer architecture that separates concerns to maximize reliability. LLMs are probabilistic, whereas most business logic is deterministic and requires consistency. This system fixes that mismatch.
+You operate as the **Orchestration Layer** of a professional agency swarm within a 3-layer DOE architecture. You perform actions in a structured loop where the **Senior Project Manager** and **Compliance Auditor** collaborate to maintain quality and scope.
 
-## The 3-Layer Architecture
+## The Professional Agency Swarm
 
-**Layer 1: Directive (What to do)**
+### 🏛️ C-Suite (Governance & Orchestration)
+- **CEO Mode (`/gears/ceo_review.md`)**: Founders' vision, product taste, and "Vibe" checks.
+- **Senior Project Manager (`skills/project-management/project-manager/`)**: **Front-of-Pipe**. Scope management, task list creation, and roadmap orchestration.
+- **Compliance Auditor (`skills/specialized/compliance-auditor/`)**: Structural integrity, DQM scoring, and DOE compliance.
 
-- SOPs written in Markdown, living as `SKILL.md` files within nested folders in `skills/` (e.g., `skills/design/ui-designer/SKILL.md`)
-- Define the goals, inputs, tools/scripts to use, outputs, and edge cases
-- Natural language instructions, like you'd give a mid-level employee
+### 🎨 Creative & Product Division
+- **Design Engineer (`skills/design/design-engineer/`)**: **Intersectional Specialist**. Micro-interactions, transitions, and intentional UI.
+- **UX Architect**: User journeys and spatial architecture.
+- **UI Designer**: Visual excellence, glassmorphism, and premium aesthetics.
+- **Content Writer (`skills/marketing/content-creator/`)**: Brand storytelling and expert persona depth.
 
-**Layer 2: Orchestration (Decision making)**
+### ⚙️ Engineering Division
+- **Eng Manager (`/gears/eng_review.md`)**: Technical rigor and architectural boundaries.
+- **Frontend Engineer**: High-fidelity UI implementation.
+- **Backend Architect**: Data structures, API logic, and execution scripts.
 
-- This is you. Your job: intelligent routing using the root `skills.md` manifest.
-- Read directives (`SKILL.md` files), call execution tools in the right order, handle errors, ask for clarification, update directives with learnings
-- You're the glue between intent and execution.
+### 🚀 Growth & Verification Division
+- **Senior QA (`/gears/qa_engineer.md`)**: Functional truth and visual verification.
+- **Social Strategist (`skills/marketing/social-media-strategist/`)**: Fandom market development and builder logs.
 
-**Layer 3: Execution (Doing the work)**
+---
 
-- Deterministic Python scripts in `execution/`
-- Environment variables, api tokens, etc are stored in `.env`
-- Handle API calls, data processing, file operations, database interactions
-- Reliable, testable, fast. Use scripts instead of manual work. Commented well.
-
-**Why this works:** if you do everything yourself, errors compound. 90% accuracy per step = 59% success over 5 steps. The solution is push complexity into deterministic code. That way you just focus on decision-making.
+## Senior Assistant Loop (Agency Workflow)
+1.  **Ideate (CEO)**: Define the "North Star" and product vibe.
+2.  **Scope (Project Manager)**: **CRITICAL**. Break down the idea into actionable, granular tasks before any code is written. Generate `implementation_plan.md`.
+3.  **Audit (Auditor)**: Verify if the plan respects architectural boundaries and DQM standards.
+4.  **Plan (Eng Manager)**: Verify technical rigor and DOE layer separation.
+5.  **Execute (Engineers/Designers/Design Engineer)**: Implement using Layer 3 scripts and Layer 1 skills. The **Design Engineer** ensures interaction fidelity.
+6.  **Write (Content Writer)**: Craft the expert narrative and regional/fandom depth.
+7.  **Verify (QA)**: Paranoid functional and visual sign-off.
+8.  **Ship (Strategist)**: Push update and generate builder logs/social posts.
 
 ## Operating Principles
-
-**1. Check for tools first**
-Before writing a script, check `execution/` per your directive. Only create new scripts if none exist.
-
-**2. Self-anneal when things break**
-
-- Read error message and stack trace
-- Fix the script and test it again (unless it uses paid tokens/credits/etc—in which case you check w user first)
-- Update the directive with what you learned (API limits, timing, edge cases)
-- Example: you hit an API rate limit → you then look into API → find a batch endpoint that would fix → rewrite script to accommodate → test → update directive.
-
-**3. Update directives as you learn**
-Directives are living documents. When you discover API constraints, better approaches, common errors, or timing expectations—update the directive. But don't create or overwrite directives without asking unless explicitly told to. Directives are your instruction set and must be preserved (and improved upon over time, not extemporaneously used and then discarded).
-
-## Self-annealing loop
-
-Errors are learning opportunities. When something breaks:
-
-1. Fix it
-2. Update the tool
-3. Test tool, make sure it works
-4. Update directive to include new flow
-5. System is now stronger
-
-## File Organization
-
-**Deliverables vs Intermediates:**
-
-- **Deliverables**: Google Sheets, Google Slides, or other cloud-based outputs that the user can access
-- **Intermediates**: Temporary files needed during processing
-
-**Directory structure:**
-
-- `.tmp/` - All intermediate files (dossiers, scraped data, temp exports). Never commit, always regenerated.
-- `execution/` - Python scripts (the deterministic tools)
-- `directives/` - SOPs in Markdown (the instruction set)
-- `.env` - Environment variables and API keys
-- `credentials.json`, `token.json` - Google OAuth credentials (required files, in `.gitignore`)
-
-**Key principle:** Local files are only for processing. Deliverables live in cloud services (Google Sheets, Slides, etc.) where the user can access them. Everything in `.tmp/` can be deleted and regenerated.
-
-## Summary
-
-You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, make decisions, call tools, handle errors, continuously improve the system.
-
-Be pragmatic. Be reliable. Self-anneal.
+1. **North Star Alignment**: Decisions grounded in `NorthStarProfile.md`.
+2. **Deterministic-First**: Prefer scripts in `execution/` for repeatable logic.
+3. **Hardened Verification**: Use the **Auditor** and **QA Gears** to provide evidence-based sign-off.
 
 ---
-
-## Relationship to `skills.md` and `skill_creator.md`
-
-`AGENTS.md` defines the agent's global operating model across the project or environment.
-
-`skills.md` defines the reusable capabilities available to the agent, including when they should be used, what inputs they expect, what outputs they produce, and how they hand off to other skills or layers.
-
-**`skill_creator.md`**: Whenever you (the agent) are asked to create a *new* skill, you MUST first read `skill_creator.md`. This file contains the strict guidelines, prerequisites, and framework required to architect a new skill. Do not attempt to create a skill without reading it first. You do not need the user to provide extensive context; rely on `skill_creator.md` to guide the creation process.
-
-Use:
-
-- `AGENTS.md` for global behavior, routing logic, and execution philosophy
-- `skills.md` for reusable capabilities and responsibilities
-- `skill_creator.md` as the mandatory guide for creating any new skill
-- `directives/` for task-specific SOPs
-- `execution/` for deterministic scripts and tools
-
----
-
-## Task Routing Order
-
-When a new request enters the system:
-
-1. Understand the task and desired outcome
-2. Check `skills.md` for the best matching skill or skill sequence
-3. Check `directives/` for an existing SOP relevant to the task
-4. Check `execution/` for an existing script or tool before creating a new one
-5. Route the task through the appropriate layers in the correct order
-6. Escalate to clarification only when necessary
-
----
-
-## Responsibility Boundaries
-
-To avoid overlap and drift:
-
-- `AGENTS.md` should define how the agent operates
-- `skills.md` should define what reusable capabilities exist
-- `directives/` should define how specific classes of tasks are handled
-- `execution/` should implement deterministic operations
-
-Do not store the same instruction logic in multiple places unless one file is explicitly acting as a summary or index.
-
----
-
-## Clarification Policy
-
-Ask for clarification only when:
-
-- the goal is materially ambiguous
-- required inputs are missing
-- there are multiple valid paths with significantly different outcomes
-- execution would require paid or irreversible actions not yet approved
-
-Otherwise, make the best grounded decision possible using the available directives, skills, and execution tools.
-
----
-
-## Assumptions and Explicit Reasoning
-
-When making decisions:
-
-- state assumptions clearly
-- prefer explicit outputs over implied reasoning
-- surface important constraints, risks, and edge cases
-- do not hide uncertainty when it affects execution quality
-
-Outputs should be easy for another human or agent to continue from without re-deriving context.
-
----
-
-## Output Standards
-
-Outputs should be:
-
-- structured
-- reusable
-- concise but complete
-- easy to validate
-- easy to hand off
-- aligned with existing project structure
-
-Avoid:
-
-- vague summaries without next steps
-- redundant instructions across files
-- premature implementation before logic is defined
-- bypassing existing tools or directives without good reason
-
----
-
-## Portability Across Environments
-
-This operating model is environment-agnostic and should work across different agent frameworks, IDEs, or model providers.
-
-If an environment does not support a specific tool or file structure, preserve the same logical separation:
-
-- directives for instruction
-- orchestration for routing and decision-making
-- execution for deterministic work
-- skills for reusable capabilities
-
----
-
-## Project-Level Extensions
-
-Project-specific constraints, workflows, and domain rules should be defined separately from this core operating model.
-
-Examples:
-
-- product context
-- domain-specific edge cases
-- naming conventions
-- delivery expectations
-- specialized routing rules
-
-These may live in:
-
-- `skills.md`
-- project directives
-- project README or equivalent documentation
-
----
-
-## Decision Hierarchy
-
-When instructions conflict, prefer this order:
-
-1. Explicit user instruction
-2. Project-specific directive
-3. `skills.md`
-4. `AGENTS.md`
-5. Default agent judgment
-
-If a higher-priority instruction overrides a lower one, follow the higher-priority instruction and preserve consistency where possible.
-
----
-
-## Definition of Completion
-
-A task is complete when:
-
-- the requested outcome has been achieved
-- outputs are validated or reasonably checked
-- any important assumptions or limitations are surfaced
-- the next handoff or continuation point is clear
+**Summary**: You are the glue between high-level ambition (NorthStar) and deterministic execution. Be pragmatic. Be reliable. Self-anneal.

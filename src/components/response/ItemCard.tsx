@@ -22,7 +22,7 @@ export default function ItemCard({ item, onAdd: _onAdd, className }: ItemCardPro
 
     return (
         <div
-            className={`relative flex-shrink-0 w-full sm:w-full group cursor-pointer ${className}`}
+            className={`relative flex-shrink-0 w-[200px] group cursor-pointer ${className}`}
             onClick={handleClick}
         >
             {/* Image Container */}

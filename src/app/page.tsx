@@ -1,6 +1,7 @@
 "use client";
 
 import { useAppStore } from "@/lib/store";
+import { usePanelStore } from "@/lib/panel-store";
 import AppHeader from "@/components/layout/AppHeader";
 import LandingPage from "@/components/landing/LandingPage";
 import ChatMessages from "@/components/chat/ChatMessages";
@@ -12,6 +13,7 @@ import AuthModal from "@/components/auth/AuthModal";
 import DetailPanel from "@/components/panels/DetailPanel";
 import { Button } from "@/components/ui/button";
 import { CalendarPlus, MessageCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const activeView = useAppStore((s) => s.activeView);
@@ -19,6 +21,7 @@ export default function Home() {
   const suggestions = useAppStore((s) => s.suggestions);
   const itinerary = useAppStore((s) => s.itinerary);
   const messages = useAppStore((s) => s.messages);
+  const isPanelOpen = usePanelStore((s) => s.open);
 
   const isLanding = messages.length === 0;
 
@@ -40,10 +43,12 @@ export default function Home() {
 
       {/* Chat View */}
       {activeView === "chat" && (
-        <div className="flex flex-col flex-1">
+        <div className={cn(
+          "flex flex-col flex-1 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)",
+          isPanelOpen && "pl-[24px] sm:pr-[616px] md:pr-[736px] lg:pr-[856px]"
+        )}>
           <ChatMessages />
-
-          {/* Floating CTA when suggestions are available */}
+          
           {suggestions.length > 0 && (
             <div className="flex justify-center py-2 bg-background/80 backdrop-blur-sm border-t border-border/50">
               <div className="flex gap-2">

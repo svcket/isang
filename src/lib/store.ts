@@ -4,6 +4,7 @@ import type {
     TripSnapshot,
     SuggestionSection,
     Itinerary,
+    TimeBlock,
     AssistantResponse,
 } from "@/types";
 
@@ -21,6 +22,7 @@ interface AppState {
     isLoading: boolean;
 
     // Trip
+    tripId: string | null;
     tripSnapshot: TripSnapshot | null;
     suggestions: SuggestionSection[];
     itinerary: Itinerary | null;
@@ -58,6 +60,11 @@ interface AppState {
     clearFilter: (key: keyof AppState['filterState']) => void;
     clearAllFilters: () => void;
     setActiveFilterPanel: (panel: "destination" | "dates" | "travelers" | "budget" | null) => void;
+    // Itinerary CRUD
+    deleteItineraryBlock: (dayNumber: number, blockId: string) => Promise<void>;
+    updateItineraryBlock: (dayNumber: number, blockId: string, updates: Partial<TimeBlock>) => Promise<void>;
+    addItineraryBlock: (dayNumber: number, block: TimeBlock) => Promise<void>;
+    saveTrip: () => Promise<void>;
     reset: () => void;
 }
 
@@ -73,6 +80,7 @@ export const useAppStore = create<AppState>((set) => ({
     messages: [],
     isLoading: false,
 
+    tripId: null,
     tripSnapshot: null,
     suggestions: [],
     itinerary: null,
@@ -189,6 +197,52 @@ export const useAppStore = create<AppState>((set) => ({
     }),
 
     setActiveFilterPanel: (panel) => set({ activeFilterPanel: panel }),
+
+    deleteItineraryBlock: async (dayNumber, blockId) => set((state) => {
+        if (!state.itinerary) return state;
+        const newDays = state.itinerary.days.map(day => {
+            if (day.dayNumber === dayNumber) {
+                return { ...day, blocks: day.blocks.filter(b => b.id !== blockId) };
+            }
+            return day;
+        });
+        // TODO: Sync with Supabase if state.tripId exists
+        return { itinerary: { ...state.itinerary, days: newDays } };
+    }),
+
+    updateItineraryBlock: async (dayNumber, blockId, updates) => set((state) => {
+        if (!state.itinerary) return state;
+        const newDays = state.itinerary.days.map(day => {
+            if (day.dayNumber === dayNumber) {
+                const newBlocks = day.blocks.map(b => b.id === blockId ? { ...b, ...updates } : b);
+                return { ...day, blocks: newBlocks };
+            }
+            return day;
+        });
+        // TODO: Sync with Supabase if state.tripId exists
+        return { itinerary: { ...state.itinerary, days: newDays } };
+    }),
+
+    addItineraryBlock: async (dayNumber, block) => set((state) => {
+        if (!state.itinerary) return state;
+        const newDays = state.itinerary.days.map(day => {
+            if (day.dayNumber === dayNumber) {
+                return { ...day, blocks: [...day.blocks, block] };
+            }
+            return day;
+        });
+        // TODO: Sync with Supabase if state.tripId exists
+        return { itinerary: { ...state.itinerary, days: newDays } };
+    }),
+
+    saveTrip: async () => {
+        const state = useAppStore.getState();
+        if (!state.tripSnapshot || !state.itinerary) return;
+
+        // In Phase 16, this will use createClient().from('trips').upsert(...)
+        console.log("Saving trip to Supabase...", state.tripSnapshot);
+        // set({ tripId: someId });
+    },
 
     reset: () =>
         set({

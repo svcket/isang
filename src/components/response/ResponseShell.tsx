@@ -8,6 +8,7 @@ import ActivitySection from "./sections/ActivitySection";
 import ItineraryResponseShell from "./itinerary/ItineraryResponseShell";
 import DestinationInfoResponse from "./destination/DestinationInfoResponse";
 import DestinationSuggestionCard from "./sections/DestinationSuggestionCard";
+import EntityText from "../chat/EntityText";
 
 // Helper to map generic Item to FlightItem
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,10 +70,8 @@ export default function ResponseShell({
 
             {/* Intro Text - Restored & Verified */}
             {data.introduction && (
-                <div className="px-1">
-                    <p className="text-[16px] text-neutral-600 leading-relaxed">
-                        {data.introduction}
-                    </p>
+                <div className="px-1 text-[16px] text-neutral-600 leading-relaxed">
+                    <EntityText content={data.introduction} />
                 </div>
             )}
 
@@ -172,10 +171,8 @@ export default function ResponseShell({
 
             {/* Closing / Outro Text (Before CTA) */}
             {data.closing && (
-                <div className="px-1">
-                    <p className="text-[16px] text-neutral-600 leading-relaxed">
-                        {data.closing}
-                    </p>
+                <div className="px-1 text-[16px] text-neutral-600 leading-relaxed">
+                    <EntityText content={data.closing} />
                 </div>
             )}
 

@@ -78,6 +78,7 @@ export interface Item {
     id: string;
     title: string;
     image_url: string;
+    subtitle?: string;
     meta: string[]; // e.g. ["4.5 ★", "Shinjuku", "15 mins away"]
     price_chip?: string; // e.g. "$120/night", "Free"
     // Compat / Extended fields

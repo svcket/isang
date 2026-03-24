@@ -12,21 +12,23 @@ export default function PanelTabs({ tabs, activeTab, onTabChange }: PanelTabsPro
     if (tabs.length <= 1) return null;
 
     return (
-        <div className="sticky top-0 z-10 bg-white border-b border-neutral-100">
-            <div className="flex overflow-x-auto scrollbar-hide px-4 gap-1">
+        <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-neutral-100">
+            <div className="flex overflow-x-auto scrollbar-hide px-6 gap-6 h-12">
                 {tabs.map((tab) => (
                     <button
                         key={tab}
                         onClick={() => onTabChange(tab)}
                         className={cn(
-                            "flex-shrink-0 px-3 py-2.5 text-[13px] font-medium transition-colors whitespace-nowrap",
-                            "border-b-2 -mb-px",
+                            "flex-shrink-0 px-0 py-0 text-[14px] font-semibold transition-all whitespace-nowrap relative flex items-center h-full",
                             activeTab === tab
-                                ? "border-neutral-900 text-neutral-900"
-                                : "border-transparent text-neutral-400 hover:text-neutral-600"
+                                ? "text-neutral-900"
+                                : "text-neutral-400 hover:text-neutral-600"
                         )}
                     >
                         {tab}
+                        {activeTab === tab && (
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900 rounded-full" />
+                        )}
                     </button>
                 ))}
             </div>
