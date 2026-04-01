@@ -44,11 +44,26 @@ next-env.d.ts
 /coverage
 /test-results
 
+# playwright
+/playwright-report
+
 # agency skills
 /skills
+/skills.md
+/skill_creator.md
+/NorthStarProfile.md
+/AGENTS.md
+/CLAUDE.md
+/GEMINI.md
+/directives
+/execution
+/.agent
+/.agents
+/.antigravity
+/.gemini
+/task.md
+/implementation_plan.md
+/walkthrough.md
 /public/attraction
 /public/country
 /public/stay
-
-# playwright
-/playwright-report
